@@ -10,4 +10,8 @@ class Apartment extends Model
     use HasFactory;
 
     protected $fillable = ['number', 'floor', 'owner_name', 'area', 'status'];
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
 }

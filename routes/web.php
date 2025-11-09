@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Controllers\AmenityBookingController;
 use App\Http\Controllers\SecurityIncidentController;
+use App\Http\Controllers\ApartmentController;
+use App\Http\Controllers\ContractController;
+
 /*
 |--------------------------------------------------------------------------
 | Hệ thống route chính cho ứng dụng Quản lý Tòa Nhà

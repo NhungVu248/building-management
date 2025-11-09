@@ -72,3 +72,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [App\Http\Controllers\FinanceReportController::class, 'index'])
         ->name('reports.index');
 });
+require __DIR__.'/auth.php';

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\AuditLog; // ✅ Thêm dòng này
 
 class ProfileController extends Controller
 {
@@ -29,15 +30,30 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $old = $user->only(['name', 'email']); // ✅ Lưu dữ liệu cũ
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('profile.edit');
+        // ✅ Ghi lại nhật ký thay đổi hồ sơ
+        AuditLog::create([
+            'user_id'   => $user->id,
+            'action'    => 'profile_updated',
+            'ip'        => $request->ip(),
+            'user_agent'=> $request->userAgent(),
+            'meta'      => [
+                'before' => $old,
+                'after'  => $user->only(['name', 'email']),
+            ],
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
@@ -51,8 +67,16 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        // ✅ Ghi log trước khi xóa
+        AuditLog::create([
+            'user_id'   => $user->id,
+            'action'    => 'profile_deleted',
+            'ip'        => $request->ip(),
+            'user_agent'=> $request->userAgent(),
+            'meta'      => ['email' => $user->email],
+        ]);
 
+        Auth::logout();
         $user->delete();
 
         $request->session()->invalidate();

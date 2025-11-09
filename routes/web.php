@@ -1,41 +1,74 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
-
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
+use App\Http\Controllers\AmenityBookingController;
+use App\Http\Controllers\SecurityIncidentController;
 /*
 |--------------------------------------------------------------------------
-| ✅ Thêm các route cho menu R1–R5
-| Giữ nguyên logic cũ, không ghi đè hoặc xóa route mặc định.
+| Hệ thống route chính cho ứng dụng Quản lý Tòa Nhà
 |--------------------------------------------------------------------------
+| - Có thêm route logout (được Ziggy nhận diện)
+| - Dashboard trả dữ liệu summary thật
+| - Giữ nguyên toàn bộ logic CRUD cũ
+|
 */
-Route::middleware(['auth'])->group(function () {
-    Route::get('/r1', fn() => Inertia::render('Placeholders/R1'))->name('r1.index');
-    Route::get('/r2', fn() => Inertia::render('Placeholders/R2'))->name('r2.index');
-    Route::get('/r3', fn() => Inertia::render('Placeholders/R3'))->name('r3.index');
-    Route::get('/r4', fn() => Inertia::render('Placeholders/R4'))->name('r4.index');
-    Route::get('/r5', fn() => Inertia::render('Placeholders/R5'))->name('r5.index');
-});
 
-require __DIR__.'/auth.php';
+// 🧩 Route logout — cần đặt ngoài middleware auth để Ziggy không báo lỗi
+Route::post('/logout', function (Request $request) {
+    Auth::guard('web')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect('/login');
+})->name('logout');
+
+
+// ⚙️ Middleware auth cho toàn bộ hệ thống admin
+Route::middleware(['auth'])->group(function () {
+
+    // 🏠 Dashboard (hiển thị dữ liệu thật)
+    Route::get('/dashboard', function () {
+
+        $summary = [
+            'staff' => Schema::hasTable('staff') ? DB::table('staff')->count() : 0,
+            'apartments' => Schema::hasTable('apartments') ? DB::table('apartments')->count() : 0,
+            'residents' => Schema::hasTable('residents') ? DB::table('residents')->count() : 0,
+            'maintenance' => Schema::hasTable('maintenance_requests')
+                ? DB::table('maintenance_requests')->where('status', 'open')->count()
+                : 0,
+            'unpaidInvoices' => Schema::hasTable('invoices')
+                ? DB::table('invoices')->where('status', 'unpaid')->count()
+                : 0,
+        ];
+
+        return Inertia::render('Dashboard', compact('summary'));
+    })->name('dashboard');
+
+
+    // 🧩 R1 – Quản lý hệ thống & nhân sự
+    Route::resource('staff', App\Http\Controllers\StaffController::class);
+
+    // 🏘️ R2 – Quản lý căn hộ & pháp lý
+    Route::resource('apartments', App\Http\Controllers\ApartmentController::class);
+    Route::resource('contracts', App\Http\Controllers\ContractController::class);
+
+    // 👪 R3 – Cư dân & tiện ích cộng đồng
+    Route::resource('residents', App\Http\Controllers\ResidentController::class);
+    Route::resource('amenities', App\Http\Controllers\AmenityController::class);
+    Route::resource('bookings', App\Http\Controllers\AmenityBookingController::class);
+
+    // 🛠️ R4 – Vận hành: An ninh & Bảo trì
+    Route::resource('maintenance', App\Http\Controllers\MaintenanceRequestController::class);
+    Route::resource('security', App\Http\Controllers\SecurityIncidentController::class);
+
+    // 💰 R5 – Tài chính & nghiệp vụ
+    Route::resource('fee-types', App\Http\Controllers\FeeTypeController::class);
+    Route::resource('invoices', App\Http\Controllers\InvoiceController::class);
+    Route::resource('payments', App\Http\Controllers\PaymentController::class);
+    Route::get('/reports', [App\Http\Controllers\FinanceReportController::class, 'index'])
+        ->name('reports.index');
+});

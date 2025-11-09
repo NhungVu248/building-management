@@ -13,18 +13,17 @@ return new class extends Migration
     {
         Schema::create('amenity_bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('amenity_id')->constrained()->onDelete('cascade');
-            $table->foreignId('resident_id')->constrained()->onDelete('cascade');
-            $table->date('booking_date');
+            $table->foreignId('amenity_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('resident_id')->nullable()->constrained()->nullOnDelete(); // admin đặt hộ
+            $table->date('date');
             $table->time('start_time');
             $table->time('end_time');
-            $table->enum('status', ['Đã xác nhận','Đã hủy'])->default('Đã xác nhận');
+            $table->enum('status',['confirmed','cancelled'])->default('confirmed');
             $table->timestamps();
 
-            $table->index(
-            ['amenity_id', 'booking_date', 'start_time', 'end_time'],
-            'amenity_booking_idx');
-        });
+            $table->unique(['amenity_id','date','start_time','end_time','resident_id'], 'uniq_booking_slot_user');
+            // Tối giản: chặn trùng chính xác khung giờ. Ta sẽ bổ sung check chồng lấn ở Controller.
+            });
     }
 
     /**

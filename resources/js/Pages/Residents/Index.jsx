@@ -1,71 +1,103 @@
 import React from 'react';
-import { Link, router } from '@inertiajs/react';
-import { Table, Button, Container, Badge } from 'react-bootstrap';
+import { Link, usePage } from '@inertiajs/react';
+import { Table, Button, Container } from 'react-bootstrap';
 
 export default function Index({ residents }) {
-  const handleDelete = (id) => {
-    if (confirm('Bạn có chắc chắn muốn xóa cư dân này?')) {
-      router.delete(`/residents/${id}`);
-    }
-  };
+  const { flash } = usePage().props;
 
   return (
-    <Container className="mt-4">
-      <h2 className="mb-4">👥 Quản lý Cư dân</h2>
-      <Link href="/residents/create" className="btn btn-primary mb-3">
-        ➕ Thêm cư dân
+    <Container className="py-3">
+      <h3 className="mb-3">Quản lý cư dân</h3>
+
+      {flash?.success && (
+        <div className="alert alert-success">{flash.success}</div>
+      )}
+
+      <Link href={route('residents.create')}>
+        <Button variant="primary" className="mb-3">
+          + Thêm cư dân
+        </Button>
       </Link>
 
       <Table striped bordered hover responsive>
-        <thead>
-          <tr className="table-dark text-center">
-            <th>Tên cư dân</th>
-            <th>SĐT</th>
+        <thead className="table-light">
+          <tr>
+            <th>#</th>
+            <th>Tên</th>
+            <th>CCCD</th>
+            <th>Điện thoại</th>
             <th>Email</th>
-            <th>Căn hộ</th>
             <th>Trạng thái</th>
+            <th>Ghi chú</th>
             <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          {residents.data.map((r) => (
-            <tr key={r.id} className="text-center">
-              <td>{r.name}</td>
-              <td>{r.phone}</td>
-              <td>{r.email}</td>
-              <td>{r.apartment?.code}</td>
-              <td>
-                <Badge
-                  bg={
-                    r.status === 'Đang ở'
-                      ? 'success'
-                      : r.status === 'Tạm vắng'
-                      ? 'warning'
-                      : 'secondary'
-                  }
-                >
-                  {r.status}
-                </Badge>
+          {residents.data.length === 0 && (
+            <tr>
+              <td colSpan="8" className="text-center text-muted">
+                Chưa có cư dân nào.
               </td>
+            </tr>
+          )}
+          {residents.data.map((r) => (
+            <tr key={r.id}>
+              <td>{r.id}</td>
+              <td>{r.name}</td>
+              <td>{r.cccd}</td>
+              <td>{r.phone || '-'}</td>
+              <td>{r.email || '-'}</td>
+              <td>
+                {r.status === 'dang_o' && <span className="text-success">Đang ở</span>}
+                {r.status === 'tam_vang' && <span className="text-warning">Tạm vắng</span>}
+                {r.status === 'chuyen_di' && <span className="text-danger">Chuyển đi</span>}
+              </td>
+              <td>{r.note || '-'}</td>
               <td>
                 <Link
-                  href={`/residents/${r.id}/edit`}
-                  className="btn btn-warning btn-sm me-2"
+                  href={route('residents.edit', r.id)}
+                  className="btn btn-sm btn-warning me-2"
                 >
-                  ✏️ Sửa
+                  Sửa
                 </Link>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDelete(r.id)}
+                <Link
+                  as="button"
+                  method="delete"
+                  href={route('residents.destroy', r.id)}
+                  className="btn btn-sm btn-danger"
+                  onClick={(e) => {
+                    if (!confirm('Xóa cư dân này?')) e.preventDefault();
+                  }}
                 >
-                  🗑️ Xóa
-                </Button>
+                  Xóa
+                </Link>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+
+      {/* Pagination */}
+      {residents.links && (
+        <div className="mt-3 d-flex justify-content-center">
+          <ul className="pagination">
+            {residents.links.map((link, i) => (
+              <li
+                key={i}
+                className={`page-item ${link.active ? 'active' : ''} ${
+                  !link.url ? 'disabled' : ''
+                }`}
+              >
+                <Link
+                  href={link.url || '#'}
+                  className="page-link"
+                  dangerouslySetInnerHTML={{ __html: link.label }}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </Container>
   );
 }

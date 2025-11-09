@@ -1,65 +1,74 @@
-import React from 'react';
-import { Link, router } from '@inertiajs/react';
-import { Table, Button, Container, Badge } from 'react-bootstrap';
+import React from "react";
+import { Link, usePage } from "@inertiajs/react";
+import { Table, Button, Container } from "react-bootstrap";
 
 export default function Index({ amenities }) {
-  const handleDelete = (id) => {
-    if (confirm('Bạn có chắc chắn muốn xóa tiện ích này?')) {
-      router.delete(`/amenities/${id}`);
-    }
-  };
+  const { flash } = usePage().props;
 
   return (
-    <Container className="mt-4">
-      <h2 className="mb-4">🏊‍♂️ Quản lý Tiện ích Cộng đồng</h2>
+    <Container className="py-4">
+      <h3 className="mb-3">🏢 Quản lý Tiện ích cộng đồng</h3>
 
-      <Link href="/amenities/create" className="btn btn-primary mb-3">
-        ➕ Thêm Tiện ích
-      </Link>
+      {flash?.success && (
+        <div className="alert alert-success">{flash.success}</div>
+      )}
 
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr className="table-dark text-center">
+      <div className="d-flex justify-content-between mb-3">
+        <Link href={route("amenities.create")}>
+          <Button variant="primary">+ Thêm tiện ích</Button>
+        </Link>
+      </div>
+
+      <Table bordered hover responsive>
+        <thead className="table-light">
+          <tr>
+            <th>#</th>
             <th>Tên tiện ích</th>
             <th>Mô tả</th>
             <th>Công suất</th>
+            <th>Giới hạn/tuần</th>
             <th>Trạng thái</th>
             <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          {amenities.data && amenities.data.length > 0 ? (
+          {amenities.data.length > 0 ? (
             amenities.data.map((a) => (
-              <tr key={a.id} className="text-center align-middle">
+              <tr key={a.id}>
+                <td>{a.id}</td>
                 <td>{a.name}</td>
-                <td>{a.description}</td>
+                <td>{a.description || "-"}</td>
                 <td>{a.capacity}</td>
+                <td>{a.max_per_week}</td>
                 <td>
-                  <Badge bg={a.is_active ? 'success' : 'secondary'}>
-                    {a.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
-                  </Badge>
+                  {a.is_active ? (
+                    <span className="badge bg-success">Đang hoạt động</span>
+                  ) : (
+                    <span className="badge bg-secondary">Tạm ngưng</span>
+                  )}
                 </td>
                 <td>
                   <Link
-                    href={`/amenities/${a.id}/edit`}
-                    className="btn btn-warning btn-sm me-2"
+                    href={route("amenities.edit", a.id)}
+                    className="btn btn-sm btn-warning me-2"
                   >
-                    ✏️ Sửa
+                    Sửa
                   </Link>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDelete(a.id)}
+                  <Link
+                    as="button"
+                    method="delete"
+                    href={route("amenities.destroy", a.id)}
+                    className="btn btn-sm btn-danger"
                   >
-                    🗑️ Xóa
-                  </Button>
+                    Xóa
+                  </Link>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="text-center">
-                Không có tiện ích nào.
+              <td colSpan="7" className="text-center">
+                Chưa có tiện ích nào.
               </td>
             </tr>
           )}

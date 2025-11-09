@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class AmenityBooking extends Model
 {
-    protected $fillable = ['amenity_id','resident_id','booking_date','start_time','end_time','status'];
+   protected $fillable = ['amenity_id','resident_id','date','start_time','end_time','status'];
 
-    public function amenity()  { return $this->belongsTo(Amenity::class); }
-    public function resident() { return $this->belongsTo(Resident::class); }
+  public function amenity() { return $this->belongsTo(Amenity::class); }
+  public function resident() { return $this->belongsTo(Resident::class); }
 }

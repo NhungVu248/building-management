@@ -1,68 +1,96 @@
-import React from 'react';
-import { Link, router } from '@inertiajs/react';
-import { Container, Table, Button, Badge } from 'react-bootstrap';
+import React from "react";
+import { Link, usePage } from "@inertiajs/react";
+import { Table, Button, Container, Alert } from "react-bootstrap";
 
 export default function Index({ bookings }) {
-  const handleDelete = (id) => {
-    if (confirm('Bạn có chắc chắn muốn hủy booking này không?')) {
-      router.delete(`/bookings/${id}`);
-    }
-  };
+  const { flash } = usePage().props;
 
   return (
-    <Container className="mt-4">
-      <h2 className="mb-3">🗓️ Quản lý Booking Tiện ích</h2>
+    <Container className="py-4">
+      <h3 className="mb-4">Quản lý đặt tiện ích</h3>
 
-      <Link href="/bookings/create" className="btn btn-primary mb-3">
-        ➕ Tạo Booking mới
+      {flash?.success && <Alert variant="success">{flash.success}</Alert>}
+
+      <Link href={route("bookings.create")}>
+        <Button className="mb-3">+ Tạo booking</Button>
       </Link>
 
       <Table striped bordered hover responsive>
-        <thead>
-          <tr className="table-dark text-center">
+        <thead className="table-light">
+          <tr>
+            <th>#</th>
             <th>Tiện ích</th>
             <th>Cư dân</th>
-            <th>Căn hộ</th>
             <th>Ngày</th>
-            <th>Giờ bắt đầu</th>
-            <th>Giờ kết thúc</th>
+            <th>Bắt đầu</th>
+            <th>Kết thúc</th>
             <th>Trạng thái</th>
-            <th>Hành động</th>
+            <th>Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {bookings.data?.map((b) => (
-            <tr key={b.id} className="text-center">
-              <td>{b.amenity?.name}</td>
-              <td>{b.resident?.name}</td>
-              <td>{b.resident?.apartment?.code}</td>
-              <td>{b.booking_date}</td>
-              <td>{b.start_time}</td>
-              <td>{b.end_time}</td>
-              <td>
-                <Badge bg={b.status === 'Đã xác nhận' ? 'success' : 'secondary'}>
-                  {b.status}
-                </Badge>
-              </td>
-              <td>
-                <Link
-                  href={`/bookings/${b.id}/edit`}
-                  className="btn btn-warning btn-sm me-2"
-                >
-                  ✏️ Sửa
-                </Link>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDelete(b.id)}
-                >
-                  🗑️ Xóa
-                </Button>
+          {bookings.data.length > 0 ? (
+            bookings.data.map((b) => (
+              <tr key={b.id}>
+                <td>{b.id}</td>
+                <td>{b.amenity?.name}</td>
+                <td>{b.resident?.name || "-"}</td>
+                <td>{b.date}</td>
+                <td>{b.start_time}</td>
+                <td>{b.end_time}</td>
+                <td>
+                  <span
+                    className={`badge bg-${
+                      b.status === "confirmed" ? "success" : "secondary"
+                    }`}
+                  >
+                    {b.status}
+                  </span>
+                </td>
+                <td>
+                  <Link
+                    href={route("bookings.edit", b.id)}
+                    className="btn btn-sm btn-warning me-2"
+                  >
+                    Sửa
+                  </Link>
+                  <Link
+                    as="button"
+                    method="delete"
+                    href={route("bookings.destroy", b.id)}
+                    className="btn btn-sm btn-danger"
+                    onClick={(e) => {
+                      if (!confirm("Xác nhận xóa booking này?")) e.preventDefault();
+                    }}
+                  >
+                    Xóa
+                  </Link>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="text-center py-3">
+                Chưa có booking nào.
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </Table>
+
+      {/* Pagination (nếu cần) */}
+      <div className="d-flex justify-content-end mt-3">
+        {bookings.links?.map((link) => (
+          <Link
+            key={link.label}
+            href={link.url || "#"}
+            className={`btn btn-sm mx-1 ${
+              link.active ? "btn-primary" : "btn-outline-primary"
+            }`}
+            dangerouslySetInnerHTML={{ __html: link.label }}
+          />
+        ))}
+      </div>
     </Container>
   );
 }

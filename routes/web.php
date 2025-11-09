@@ -63,7 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('residents', App\Http\Controllers\ResidentController::class);
     Route::resource('amenities', App\Http\Controllers\AmenityController::class);
     Route::resource('bookings', App\Http\Controllers\AmenityBookingController::class);
-
+    Route::resource('announcements', App\Http\Controllers\AnnouncementController::class);
+    Route::resource('tickets', App\Http\Controllers\TicketController::class);
     // 🛠️ R4 – Vận hành: An ninh & Bảo trì
     Route::resource('maintenance', App\Http\Controllers\MaintenanceRequestController::class);
     Route::resource('security', App\Http\Controllers\SecurityIncidentController::class);

@@ -13,13 +13,15 @@ return new class extends Migration
     {
        Schema::create('amenities', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');                // VD: Gym, Hồ bơi, Sân tennis
             $table->text('description')->nullable();
-            $table->unsignedInteger('capacity')->default(1); // số booking tối đa cùng thời điểm
+            $table->unsignedInteger('capacity')->default(1); // số slot cùng lúc
+            $table->unsignedInteger('max_per_week')->default(5); // giới hạn mỗi cư dân/tuần
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-        });
-    }
+            });
+        }
+    
 
     /**
      * Reverse the migrations.

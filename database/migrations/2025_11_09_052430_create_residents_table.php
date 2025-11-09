@@ -12,16 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('residents', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('apartment_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->enum('status', ['Đang ở', 'Tạm vắng', 'Chuyển đi'])->default('Đang ở');
-            $table->timestamps();
-
-            $table->index(['apartment_id', 'status']);
-        });
+      $table->id();
+      $table->string('name');
+      $table->string('cccd')->unique();      // CCCD duy nhất
+      $table->string('phone')->nullable();
+      $table->string('email')->nullable();
+      $table->unsignedBigInteger('apartment_id')->nullable(); // liên kết căn hộ (R2)
+      $table->enum('status', ['dang_o','tam_vang','chuyen_di'])->default('dang_o');
+      $table->text('note')->nullable();
+      $table->timestamps();
+      $table->foreign('apartment_id')->references('id')->on('apartments')->nullOnDelete();
+    });
     }
 
     /**

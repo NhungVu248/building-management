@@ -9,13 +9,13 @@ import {
   Row,
   Col,
   Card,
+  Table,
+  Badge,
 } from "react-bootstrap";
 
 export default function Dashboard() {
-  // ✅ Lấy dữ liệu từ Laravel qua Inertia
-  const { auth, summary = {} } = usePage().props;
+  const { auth, summary = {}, announcements = [], tickets = [] } = usePage().props;
 
-  // ✅ Dùng dữ liệu thật thay vì giả định
   const cards = [
     { id: 1, label: "👥 Nhân sự", value: summary.staff ?? 0, route: "/staff" },
     { id: 2, label: "🏘️ Căn hộ", value: summary.apartments ?? 0, route: "/apartments" },
@@ -26,7 +26,7 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* --- NAVBAR --- */}
+      {/* NAVBAR giữ nguyên */}
       <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="shadow-sm">
         <Container>
           <Navbar.Brand href="/dashboard" className="fw-bold text-uppercase">
@@ -35,73 +35,32 @@ export default function Dashboard() {
           <Navbar.Toggle aria-controls="main-navbar" />
           <Navbar.Collapse id="main-navbar">
             <Nav className="me-auto">
-              {/* --- R1 --- */}
-              <Nav.Link as={Link} href="/staff">
-                👥 Hệ thống & Nhân sự
-              </Nav.Link>
-
-              {/* --- R2 --- */}
+              <Nav.Link as={Link} href="/staff">👥 Hệ thống & Nhân sự</Nav.Link>
               <NavDropdown title="🏘️ Căn hộ & Pháp lý" id="nav-r2">
-                <NavDropdown.Item as={Link} href="/apartments">
-                  Danh sách Căn hộ
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/contracts">
-                  Hợp đồng pháp lý
-                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/apartments">Danh sách Căn hộ</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/contracts">Hợp đồng pháp lý</NavDropdown.Item>
               </NavDropdown>
-
-              {/* --- R3 --- */}
               <NavDropdown title="👪 Cư dân & Tiện ích" id="nav-r3">
-                <NavDropdown.Item as={Link} href="/residents">
-                  Cư dân
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/amenities">
-                  Tiện ích cộng đồng
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/bookings">
-                  Đặt lịch sử dụng tiện ích
-                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/residents">Cư dân</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/amenities">Tiện ích cộng đồng</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/bookings">Đặt lịch sử dụng tiện ích</NavDropdown.Item>
               </NavDropdown>
-
-              {/* --- R4 --- */}
               <NavDropdown title="🛠️ Vận hành" id="nav-r4">
-                <NavDropdown.Item as={Link} href="/maintenance">
-                  Bảo trì
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/security">
-                  An ninh
-                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/maintenance">Bảo trì</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/security">An ninh</NavDropdown.Item>
               </NavDropdown>
-
-              {/* --- R5 --- */}
               <NavDropdown title="💰 Tài chính & Nghiệp vụ" id="nav-r5">
-                <NavDropdown.Item as={Link} href="/fee-types">
-                  Loại phí
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/invoices">
-                  Hóa đơn
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/payments">
-                  Thanh toán
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/reports">
-                  Báo cáo thu chi
-                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/fee-types">Loại phí</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/invoices">Hóa đơn</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/payments">Thanh toán</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/reports">Báo cáo thu chi</NavDropdown.Item>
               </NavDropdown>
             </Nav>
-
-            {/* --- User Info & Logout --- */}
             <Nav className="ms-auto align-items-center">
               <span className="text-light me-3">
                 Xin chào, <strong>{auth?.user?.name || "Admin"}</strong>
               </span>
-              <Button
-                variant="outline-light"
-                size="sm"
-                as={Link}
-                href={route("logout")}
-                method="post"
-              >
+              <Button variant="outline-light" size="sm" as={Link} href={route("logout")} method="post">
                 🚪 Đăng xuất
               </Button>
             </Nav>
@@ -116,7 +75,8 @@ export default function Dashboard() {
           Chọn nhóm chức năng ở thanh menu hoặc xem tổng quan hệ thống bên dưới.
         </p>
 
-        <Row className="g-4">
+        {/* --- Tổng quan cards --- */}
+        <Row className="g-4 mb-5">
           {cards.map((item) => (
             <Col key={item.id} xs={12} sm={6} md={4} lg={3}>
               <Card className="shadow-sm border-0 h-100 text-center">
@@ -132,6 +92,84 @@ export default function Dashboard() {
               </Card>
             </Col>
           ))}
+        </Row>
+
+        {/* --- THÔNG BÁO & TICKET --- */}
+        <Row className="g-4">
+          <Col md={6}>
+            <Card className="shadow-sm h-100">
+              <Card.Header className="fw-bold bg-primary text-white d-flex justify-content-between align-items-center">
+                🔔 Thông báo gần đây
+                <Button as={Link} href="/announcements" size="sm" variant="light">
+                  Xem tất cả
+                </Button>
+              </Card.Header>
+              <Card.Body className="p-0">
+                {announcements.length === 0 ? (
+                  <p className="p-3 text-muted text-center mb-0">Không có thông báo nào.</p>
+                ) : (
+                  <Table hover responsive className="mb-0">
+                    <tbody>
+                      {announcements.slice(0, 5).map((a) => (
+                        <tr key={a.id}>
+                          <td className="fw-semibold">{a.title}</td>
+                          <td className="text-end text-muted small">
+                            {new Date(a.created_at).toLocaleDateString("vi-VN")}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                )}
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col md={6}>
+            <Card className="shadow-sm h-100">
+              <Card.Header className="fw-bold bg-warning d-flex justify-content-between align-items-center">
+                🧾 Ticket phản ánh mới
+                <Button as={Link} href="/tickets" size="sm" variant="light">
+                  Quản lý
+                </Button>
+              </Card.Header>
+              <Card.Body className="p-0">
+                {tickets.length === 0 ? (
+                  <p className="p-3 text-muted text-center mb-0">Chưa có phản ánh nào.</p>
+                ) : (
+                  <Table hover responsive className="mb-0">
+                    <tbody>
+                      {tickets.slice(0, 5).map((t) => (
+                        <tr key={t.id}>
+                          <td>
+                            <div className="fw-semibold">{t.subject}</div>
+                            <small className="text-muted">
+                              {t.resident?.name || "Ẩn danh"}
+                            </small>
+                          </td>
+                          <td className="text-end">
+                            <Badge
+                              bg={
+                                t.status === "resolved"
+                                  ? "success"
+                                  : t.status === "in_progress"
+                                  ? "info"
+                                  : t.status === "closed"
+                                  ? "secondary"
+                                  : "warning"
+                              }
+                            >
+                              {t.status}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                )}
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
       </Container>
 

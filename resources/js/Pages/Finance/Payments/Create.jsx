@@ -21,21 +21,26 @@ export default function CreatePayment({ invoices }) {
     <div className="container mt-4">
       <h3>Thêm thanh toán</h3>
       <Form onSubmit={submit}>
+        {/* ====== Hóa đơn liên quan ====== */}
         <Form.Group className="mb-3">
           <Form.Label>Hóa đơn liên quan</Form.Label>
           <Form.Select
             value={data.invoice_id}
             onChange={(e) => setData('invoice_id', e.target.value)}
+            required
           >
-            <option value="">Không chọn</option>
+            <option value="">-- Chọn hóa đơn --</option>
             {invoices.map((inv) => (
               <option key={inv.id} value={inv.id}>
-                #{inv.id} - Căn hộ {inv.apartment_no}
+                {inv.code
+                  ? `${inv.code} — Căn hộ ${inv.apartment?.number || inv.apartment?.apartment_no || inv.apartment?.code || inv.apartment?.id}`
+                  : `#${inv.id} — Căn hộ ${inv.apartment?.number || inv.apartment?.apartment_no || inv.apartment?.code || inv.apartment?.id}`}
               </option>
             ))}
           </Form.Select>
         </Form.Group>
 
+        {/* ====== Người nộp ====== */}
         <Form.Group className="mb-3">
           <Form.Label>Người nộp</Form.Label>
           <Form.Control
@@ -45,6 +50,7 @@ export default function CreatePayment({ invoices }) {
           />
         </Form.Group>
 
+        {/* ====== Số tiền ====== */}
         <Form.Group className="mb-3">
           <Form.Label>Số tiền</Form.Label>
           <Form.Control
@@ -55,6 +61,7 @@ export default function CreatePayment({ invoices }) {
           />
         </Form.Group>
 
+        {/* ====== Phương thức ====== */}
         <Form.Group className="mb-3">
           <Form.Label>Phương thức thanh toán</Form.Label>
           <Form.Select
@@ -67,6 +74,7 @@ export default function CreatePayment({ invoices }) {
           </Form.Select>
         </Form.Group>
 
+        {/* ====== Ngày thanh toán ====== */}
         <Form.Group className="mb-3">
           <Form.Label>Ngày thanh toán</Form.Label>
           <Form.Control
@@ -77,6 +85,7 @@ export default function CreatePayment({ invoices }) {
           />
         </Form.Group>
 
+        {/* ====== Ghi chú ====== */}
         <Form.Group className="mb-3">
           <Form.Label>Ghi chú</Form.Label>
           <Form.Control
@@ -87,6 +96,7 @@ export default function CreatePayment({ invoices }) {
           />
         </Form.Group>
 
+        {/* ====== Nút hành động ====== */}
         <Button type="submit" disabled={processing}>Lưu</Button>{' '}
         <Link href={route('payments.index')}>
           <Button variant="secondary">Quay lại</Button>

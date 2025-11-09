@@ -6,42 +6,56 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
-use PDF;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\FinanceReportExport;
 
 class FinanceReportController extends Controller
 {
     public function index()
     {
-        // Tổng thu (Payments)
+        /**
+         * ⚙️ 1. Tổng thu (Payments)
+         * Bảng payments có cột: amount, paid_at
+         */
         $totalIncome = Payment::sum('amount');
 
-        // Tổng công nợ (Invoices chưa thanh toán)
-        $totalDebt = Invoice::where('status', '!=', 'paid')->sum('amount');
+        /**
+         * ⚙️ 2. Tổng công nợ (Invoices chưa thanh toán)
+         * Bảng invoices KHÔNG có cột 'amount'
+         * => dùng cột 'balance' (số tiền còn nợ)
+         */
+        $totalDebt = Invoice::where('status', '!=', 'paid')->sum('balance');
 
-        // Thống kê số hóa đơn
+        /**
+         * ⚙️ 3. Thống kê số lượng hóa đơn theo trạng thái
+         * Các trạng thái gồm: issued, partial, paid, overdue
+         */
         $invoiceCount = [
-            'total' => Invoice::count(),
-            'paid' => Invoice::where('status', 'paid')->count(),
-            'unpaid' => Invoice::where('status', 'unpaid')->count(),
+            'total'   => Invoice::count(),
+            'paid'    => Invoice::where('status', 'paid')->count(),
+            'partial' => Invoice::where('status', 'partial')->count(),
+            'issued'  => Invoice::where('status', 'issued')->count(),
             'overdue' => Invoice::where('status', 'overdue')->count(),
         ];
 
-        // Dữ liệu doanh thu theo tháng (12 tháng gần nhất)
+        /**
+         * ⚙️ 4. Dữ liệu doanh thu theo tháng (12 tháng gần nhất)
+         * Bảng payments có cột 'paid_at' thay vì 'payment_date'
+         */
         $monthlyRevenue = Payment::select(
-            DB::raw('MONTH(payment_date) as month'),
-            DB::raw('SUM(amount) as total')
-        )
-        ->whereYear('payment_date', now()->year)
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+                DB::raw('MONTH(paid_at) as month'),
+                DB::raw('SUM(amount) as total')
+            )
+            ->whereYear('paid_at', now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
+        /**
+         * ⚙️ 5. Trả dữ liệu về view Inertia
+         */
         return Inertia::render('Finance/Reports/Index', [
-            'totalIncome' => $totalIncome,
-            'totalDebt' => $totalDebt,
-            'invoiceCount' => $invoiceCount,
+            'totalIncome'    => $totalIncome,
+            'totalDebt'      => $totalDebt,
+            'invoiceCount'   => $invoiceCount,
             'monthlyRevenue' => $monthlyRevenue,
         ]);
     }

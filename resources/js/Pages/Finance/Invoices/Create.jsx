@@ -1,81 +1,108 @@
-import React from 'react';
-import { useForm } from '@inertiajs/react';
-import { Form, Button } from 'react-bootstrap';
+import React from "react";
+import { useForm, Link } from "@inertiajs/react";
+import { Container, Row, Col, Form, Button, Table } from "react-bootstrap";
+import ItemForm from "./ItemForm";
 
-export default function Create({ feeTypes }) {
-  const { data, setData, post, processing, errors } = useForm({
-    apartment_no: '',
-    fee_type_id: '',
-    amount: '',
-    issue_date: '',
-    due_date: ''
+export default function CreateInvoice({ apartments, feeTypes }) {
+  const { data, setData, post, processing } = useForm({
+    apartment_id: "",
+    resident_id: "",
+    billing_period: new Date().toISOString().slice(0, 10),
+    items: [],
   });
+
+  const addItem = () =>
+    setData("items", [
+      ...data.items,
+      { fee_type_id: "", description: "", qty: 1, unit_price: 0 },
+    ]);
 
   const submit = (e) => {
     e.preventDefault();
-    post(route('invoices.store'));
+    post(route("invoices.store"));
   };
 
   return (
-    <div className="container mt-4">
-      <h3>🧾 Tạo hóa đơn mới</h3>
+    <Container className="mt-4">
+      <Row className="mb-3">
+        <Col>
+          <h4>Tạo hóa đơn mới</h4>
+        </Col>
+        <Col className="text-end">
+          <Link href={route("invoices.index")} className="btn btn-secondary">
+            ← Danh sách
+          </Link>
+        </Col>
+      </Row>
+
       <Form onSubmit={submit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Số căn hộ</Form.Label>
-          <Form.Control
-            type="text"
-            value={data.apartment_no}
-            onChange={(e) => setData('apartment_no', e.target.value)}
-            isInvalid={errors.apartment_no}
-          />
-        </Form.Group>
+        <Row className="mb-3">
+          <Col md={4}>
+            <Form.Label>Căn hộ</Form.Label>
+            <Form.Select
+              value={data.apartment_id}
+              onChange={(e) => setData("apartment_id", e.target.value)}
+              required
+            >
+              <option value="">-- Chọn căn hộ --</option>
+              {apartments.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.id} - {a.name ?? ""}
+                </option>
+              ))}
+            </Form.Select>
+          </Col>
+          <Col md={4}>
+            <Form.Label>Kỳ hóa đơn</Form.Label>
+            <Form.Control
+              type="date"
+              value={data.billing_period}
+              onChange={(e) => setData("billing_period", e.target.value)}
+              required
+            />
+          </Col>
+        </Row>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Loại phí</Form.Label>
-          <Form.Select
-            value={data.fee_type_id}
-            onChange={(e) => setData('fee_type_id', e.target.value)}
-            isInvalid={errors.fee_type_id}
-          >
-            <option value="">-- Chọn loại phí --</option>
-            {feeTypes.map((ft) => (
-              <option key={ft.id} value={ft.id}>{ft.name}</option>
+        <h5>Danh mục phí</h5>
+        <Table bordered>
+          <thead>
+            <tr>
+              <th>Loại phí</th>
+              <th>Mô tả</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.items.map((item, idx) => (
+              <ItemForm
+                key={idx}
+                index={idx}
+                item={item}
+                feeTypes={feeTypes}
+                onChange={(i, val) => {
+                  const items = [...data.items];
+                  items[i] = val;
+                  setData("items", items);
+                }}
+                onRemove={(i) => {
+                  setData("items", data.items.filter((_, j) => j !== i));
+                }}
+              />
             ))}
-          </Form.Select>
-        </Form.Group>
+          </tbody>
+        </Table>
+        <Button variant="outline-primary" onClick={addItem}>
+          + Thêm dòng
+        </Button>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Số tiền</Form.Label>
-          <Form.Control
-            type="number"
-            value={data.amount}
-            onChange={(e) => setData('amount', e.target.value)}
-            isInvalid={errors.amount}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Ngày lập hóa đơn</Form.Label>
-          <Form.Control
-            type="date"
-            value={data.issue_date}
-            onChange={(e) => setData('issue_date', e.target.value)}
-            isInvalid={errors.issue_date}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Hạn thanh toán</Form.Label>
-          <Form.Control
-            type="date"
-            value={data.due_date}
-            onChange={(e) => setData('due_date', e.target.value)}
-            isInvalid={errors.due_date}
-          />
-        </Form.Group>
-
-        <Button type="submit" disabled={processing}>Lưu hóa đơn</Button>
+        <div className="mt-4">
+          <Button type="submit" disabled={processing}>
+            Lưu hóa đơn
+          </Button>
+        </div>
       </Form>
-    </div>
+    </Container>
   );
 }

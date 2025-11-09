@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoices', function (Blueprint $table) {
-            $table->id();
-            $table->string('invoice_no')->unique(); // Mã hóa đơn tự động
-            $table->string('apartment_no');
-            $table->foreignId('fee_type_id')->constrained('fee_types')->onDelete('cascade');
-            $table->decimal('amount', 12, 2);
-            $table->date('issue_date');
-            $table->date('due_date');
-            $table->enum('status', ['unpaid', 'paid', 'overdue'])->default('unpaid');
-            $table->timestamps();
+        Schema::create('invoices', function (Blueprint $t) {
+            $t->id();
+            $t->string('code')->unique();     // INV-YYYYMM-XXXX
+            $t->foreignId('apartment_id')->constrained()->cascadeOnDelete();
+            $t->foreignId('resident_id')->nullable()->constrained()->nullOnDelete();
+            $t->date('billing_period');       // ví dụ: 2025-11-01 (tháng)
+            $t->decimal('subtotal', 12, 2)->default(0);
+            $t->decimal('discount', 12, 2)->default(0);
+            $t->decimal('total', 12, 2)->default(0);
+            $t->decimal('paid', 12, 2)->default(0);
+            $t->decimal('balance', 12, 2)->default(0);
+            $t->enum('status', ['draft','issued','partial','paid','overdue'])->default('issued');
+            $t->timestamps();
         });
     }
 

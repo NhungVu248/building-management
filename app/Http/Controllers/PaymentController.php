@@ -19,10 +19,34 @@ class PaymentController extends Controller
 
     public function create()
     {
-        $invoices = Invoice::select('id', 'apartment_no')->get();
-        return Inertia::render('Finance/Payments/Create', [
-            'invoices' => $invoices
-        ]);
+        $invoices = Invoice::query()
+        ->with(['apartment:id,number']) // đổi 'number' thành 'apartment_no' hay 'code' theo DB của bạn
+        ->select('id', 'code', 'apartment_id', 'billing_period', 'total', 'paid', 'balance', 'status')
+        ->orderByDesc('billing_period')
+        ->limit(200) // tránh load quá nặng, tuỳ bạn
+        ->get()
+        // Chuẩn hoá dữ liệu để frontend hiển thị label đẹp, giảm logic phía client
+        ->map(function ($inv) {
+            $aptLabel = $inv->apartment->number
+                ?? $inv->apartment->apartment_no
+                ?? $inv->apartment->code
+                ?? $inv->apartment->id;
+
+            return [
+                'id'       => $inv->id,
+                'code'     => $inv->code,
+                'label'    => "{$inv->code} — Căn hộ {$aptLabel}",
+                'period'   => $inv->billing_period?->format('Y-m-01'),
+                'total'    => $inv->total,
+                'paid'     => $inv->paid,
+                'balance'  => $inv->balance,
+                'status'   => $inv->status,
+            ];
+        });
+
+    return Inertia::render('Finance/Payments/Create', [
+        'invoices' => $invoices,
+    ]);
     }
 
     public function store(Request $request)

@@ -77,9 +77,13 @@ Route::middleware(['auth'])->group(function () {
         ->name('maintenance-schedules.generate');
     // 💰 R5 – Tài chính & nghiệp vụ
     Route::resource('fee-types', App\Http\Controllers\FeeTypeController::class);
-    Route::resource('invoices', App\Http\Controllers\InvoiceController::class);
+    Route::resource('invoices', App\Http\Controllers\InvoiceController::class)
+    ->only(['index','show','create','store','update','destroy']);
+    Route::post('/invoices/generate-monthly', [App\Http\Controllers\InvoiceController::class,'generateMonthly'])->name('invoices.generateMonthly');
     Route::resource('payments', App\Http\Controllers\PaymentController::class);
     Route::get('/reports', [App\Http\Controllers\FinanceReportController::class, 'index'])
         ->name('reports.index'); 
+    Route::get('/debts', [App\Http\Controllers\DebtController::class,'index'])->name('debts.index');
+  Route::post('/debts/{invoice}/remind', [App\Http\Controllers\DebtController::class,'remind'])->name('debts.remind');
 });
 require __DIR__.'/auth.php';

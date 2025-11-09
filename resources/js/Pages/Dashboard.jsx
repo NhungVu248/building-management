@@ -72,8 +72,12 @@ export default function Dashboard() {
                 <NavDropdown.Item as={Link} href="/fee-types">Loại phí</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/invoices">Hóa đơn</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/payments">Thanh toán</NavDropdown.Item>
+                {/* ➕ Thêm mới dòng này */}
+                <NavDropdown.Item as={Link} href="/debts">Nhắc nợ</NavDropdown.Item>
+                {/* ⬆️ */}
                 <NavDropdown.Item as={Link} href="/reports">Báo cáo thu chi</NavDropdown.Item>
-              </NavDropdown>
+             </NavDropdown>
+
             </Nav>
 
             <Nav className="ms-auto align-items-center">

@@ -68,12 +68,18 @@ Route::middleware(['auth'])->group(function () {
     // 🛠️ R4 – Vận hành: An ninh & Bảo trì
     Route::resource('maintenance', App\Http\Controllers\MaintenanceRequestController::class);
     Route::resource('security', App\Http\Controllers\SecurityIncidentController::class);
-
+    Route::resource('access-cards', App\Http\Controllers\AccessCardController::class);
+    Route::resource('vehicles', App\Http\Controllers\VehicleController::class);
+    Route::resource('access-logs', App\Http\Controllers\AccessLogController::class)->only(['index','store']);
+    Route::resource('work-orders', App\Http\Controllers\WorkOrderController::class);
+    Route::resource('maintenance-schedules', App\Http\Controllers\MaintenanceScheduleController::class);
+    Route::post('/maintenance-schedules/{schedule}/generate', [MaintenanceScheduleController::class, 'generate'])
+        ->name('maintenance-schedules.generate');
     // 💰 R5 – Tài chính & nghiệp vụ
     Route::resource('fee-types', App\Http\Controllers\FeeTypeController::class);
     Route::resource('invoices', App\Http\Controllers\InvoiceController::class);
     Route::resource('payments', App\Http\Controllers\PaymentController::class);
     Route::get('/reports', [App\Http\Controllers\FinanceReportController::class, 'index'])
-        ->name('reports.index');
+        ->name('reports.index'); 
 });
 require __DIR__.'/auth.php';

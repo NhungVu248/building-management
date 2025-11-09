@@ -17,16 +17,24 @@ export default function Dashboard() {
   const { auth, summary = {}, announcements = [], tickets = [] } = usePage().props;
 
   const cards = [
+    // --- Phase 1–3: Các module gốc ---
     { id: 1, label: "👥 Nhân sự", value: summary.staff ?? 0, route: "/staff" },
     { id: 2, label: "🏘️ Căn hộ", value: summary.apartments ?? 0, route: "/apartments" },
     { id: 3, label: "👪 Cư dân", value: summary.residents ?? 0, route: "/residents" },
     { id: 4, label: "🛠️ Bảo trì (đang mở)", value: summary.maintenance ?? 0, route: "/maintenance" },
     { id: 5, label: "💰 Hóa đơn chưa thanh toán", value: summary.unpaidInvoices ?? 0, route: "/invoices" },
+
+    // --- Phase 5: Các module vận hành mới ---
+    { id: 6, label: "🎫 Thẻ ra/vào", value: summary.accessCards ?? 0, route: "/access-cards" },
+    { id: 7, label: "🚗 Phương tiện", value: summary.vehicles ?? 0, route: "/vehicles" },
+    { id: 8, label: "🚪 Lượt ra/vào", value: summary.accessLogs ?? 0, route: "/access-logs" },
+    { id: 9, label: "🧾 Work Orders", value: summary.workOrders ?? 0, route: "/work-orders" },
+    { id: 10, label: "🗓️ Lịch bảo dưỡng", value: summary.maintenanceSchedules ?? 0, route: "/maintenance-schedules" },
   ];
 
   return (
     <>
-      {/* NAVBAR giữ nguyên */}
+      {/* NAVBAR GIỮ NGUYÊN */}
       <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="shadow-sm">
         <Container>
           <Navbar.Brand href="/dashboard" className="fw-bold text-uppercase">
@@ -36,19 +44,30 @@ export default function Dashboard() {
           <Navbar.Collapse id="main-navbar">
             <Nav className="me-auto">
               <Nav.Link as={Link} href="/staff">👥 Hệ thống & Nhân sự</Nav.Link>
+
               <NavDropdown title="🏘️ Căn hộ & Pháp lý" id="nav-r2">
                 <NavDropdown.Item as={Link} href="/apartments">Danh sách Căn hộ</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/contracts">Hợp đồng pháp lý</NavDropdown.Item>
               </NavDropdown>
+
               <NavDropdown title="👪 Cư dân & Tiện ích" id="nav-r3">
                 <NavDropdown.Item as={Link} href="/residents">Cư dân</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/amenities">Tiện ích cộng đồng</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/bookings">Đặt lịch sử dụng tiện ích</NavDropdown.Item>
               </NavDropdown>
+
               <NavDropdown title="🛠️ Vận hành" id="nav-r4">
+                <NavDropdown.Item as={Link} href="/access-cards">Thẻ ra/vào</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/vehicles">Phương tiện</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/access-logs">Lượt ra/vào</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item as={Link} href="/work-orders">Work Orders</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/maintenance-schedules">Lịch bảo dưỡng</NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item as={Link} href="/maintenance">Bảo trì</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/security">An ninh</NavDropdown.Item>
               </NavDropdown>
+
               <NavDropdown title="💰 Tài chính & Nghiệp vụ" id="nav-r5">
                 <NavDropdown.Item as={Link} href="/fee-types">Loại phí</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/invoices">Hóa đơn</NavDropdown.Item>
@@ -56,11 +75,18 @@ export default function Dashboard() {
                 <NavDropdown.Item as={Link} href="/reports">Báo cáo thu chi</NavDropdown.Item>
               </NavDropdown>
             </Nav>
+
             <Nav className="ms-auto align-items-center">
               <span className="text-light me-3">
                 Xin chào, <strong>{auth?.user?.name || "Admin"}</strong>
               </span>
-              <Button variant="outline-light" size="sm" as={Link} href={route("logout")} method="post">
+              <Button
+                variant="outline-light"
+                size="sm"
+                as={Link}
+                href={route("logout")}
+                method="post"
+              >
                 🚪 Đăng xuất
               </Button>
             </Nav>

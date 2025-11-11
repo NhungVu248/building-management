@@ -22,6 +22,9 @@ use App\Http\Controllers\ContractController;
 */
 
 // 🧩 Route logout — cần đặt ngoài middleware auth để Ziggy không báo lỗi
+Route::get('/', function () {
+    return Inertia::render('Welcome');
+})->name('welcome');
 Route::post('/logout', function (Request $request) {
     Auth::guard('web')->logout();
     $request->session()->invalidate();

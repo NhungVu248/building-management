@@ -41,10 +41,10 @@ class FinanceReportController extends Controller
          * Bảng payments có cột 'paid_at' thay vì 'payment_date'
          */
         $monthlyRevenue = Payment::select(
-                DB::raw('MONTH(paid_at) as month'),
+                DB::raw('MONTH(payment_date) as month'),
                 DB::raw('SUM(amount) as total')
             )
-            ->whereYear('paid_at', now()->year)
+            ->whereYear('payment_date', now()->year)
             ->groupBy('month')
             ->orderBy('month')
             ->get();

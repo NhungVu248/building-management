@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useForm } from '@inertiajs/react';
-import { Table, Button, Container } from 'react-bootstrap';
+import { Table, Button, Container, Row, Col, Card } from 'react-bootstrap';
 
 export default function Index({ feeTypes }) {
   const { delete: destroy } = useForm();
@@ -12,46 +12,81 @@ export default function Index({ feeTypes }) {
   };
 
   return (
-    <Container className="mt-4">
-      <h3 className="mb-4">💰 Quản lý loại phí</h3>
+    <Container fluid className="bg-light min-vh-100 py-5">
+      <Container>
+        <Row className="justify-content-center">
+          <Col lg={11} xl={10}>
+            <Card className="shadow-sm border-0" style={{ borderRadius: '15px' }}>
+              <Card.Body className="p-4 p-md-5">
 
-      <Link href={route('fee-types.create')}>
-        <Button variant="primary" className="mb-3">+ Thêm loại phí</Button>
-      </Link>
+                <Row className="align-items-center mb-4">
+                  <Col>
+                    <h2 className="mb-0 fw-bold">💰 Quản lý loại phí</h2>
+                  </Col>
+                  <Col xs="auto">
 
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Tên loại phí</th>
-            <th>Số tiền mặc định</th>
-            <th>Mô tả</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {feeTypes.map((ft) => (
-            <tr key={ft.id}>
-              <td>{ft.id}</td>
-              <td>{ft.name}</td>
-              <td>{ft.default_amount.toLocaleString()} VNĐ</td>
-              <td>{ft.description ?? '-'}</td>
-              <td>
-                <Link href={route('fee-types.edit', ft.id)}>
-                  <Button variant="warning" size="sm" className="me-2">Sửa</Button>
-                </Link>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDelete(ft.id)}
-                >
-                  Xóa
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                    <Link
+                      href={route('fee-types.create')}
+                      className="btn btn-primary"
+                    >
+                      + Thêm loại phí
+                    </Link>
+                  </Col>
+                </Row>
+
+                <Table hover responsive className="align-middle">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Tên loại phí</th>
+                      <th className="text-end">Số tiền mặc định</th>
+                      <th>Mô tả</th>
+                      <th className="text-end">Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {feeTypes.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="text-center text-muted py-3">
+                          Chưa có loại phí nào.
+                        </td>
+                      </tr>
+                    )}
+                    
+                    {feeTypes.map((ft) => (
+                      <tr key={ft.id}>
+                        <td className="fw-bold">{ft.id}</td>
+                        <td>{ft.name}</td>
+                        <td className="text-end">
+                          {ft.default_amount.toLocaleString()} VNĐ
+                        </td>
+                        <td>{ft.description ?? '—'}</td>
+                        <td className="text-end">
+                          <Link
+                            href={route('fee-types.edit', ft.id)}
+                            className="btn btn-warning btn-sm me-2"
+                          >
+                            ✏️
+                          </Link>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDelete(ft.id)} 
+                          >
+                            🗑️
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+
+
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </Container>
   );
 }

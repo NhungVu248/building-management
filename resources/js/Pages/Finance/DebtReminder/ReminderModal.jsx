@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Row, Col, Spinner } from 'react-bootstrap';
+import { Modal, Button, Form, Spinner, ListGroup } from 'react-bootstrap';
 import dayjs from 'dayjs';
 
 export default function ReminderModal({ invoice, onClose, onSend, loading }) {
@@ -13,37 +13,50 @@ export default function ReminderModal({ invoice, onClose, onSend, loading }) {
   return (
     <Modal show onHide={onClose} backdrop="static" centered>
       <Modal.Header closeButton>
-        <Modal.Title>Gửi nhắc nợ</Modal.Title>
+        <Modal.Title>🔔 Gửi nhắc nợ</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <p>
-          <strong>Hóa đơn:</strong> {invoice.code}
-          <br />
-          <strong>Căn hộ:</strong> {invoice.apartment?.id ?? '—'}
-          <br />
-          <strong>Người thuê:</strong> {invoice.resident?.name ?? '—'}
-          <br />
-          <strong>Kỳ:</strong> {dayjs(invoice.billing_period).format('MM/YYYY')}
-        </p>
+        <p>Bạn sắp gửi nhắc nợ cho hóa đơn với thông tin:</p>
 
-        <Form.Group as={Row} className="align-items-center">
-          <Form.Label column sm={4}>
-            Mức nhắc nợ
-          </Form.Label>
-          <Col sm={8}>
-            <Form.Select
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-              disabled={loading}
-            >
-              {levels.map((l) => (
-                <option key={l.value} value={l.value}>
-                  {l.label}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
+        <ListGroup variant="flush" className="mb-4">
+          <ListGroup.Item className="d-flex justify-content-between px-0">
+            <strong>Hóa đơn:</strong>
+            <span className="fw-bold">{invoice.code}</span>
+          </ListGroup.Item>
+          <ListGroup.Item className="d-flex justify-content-between px-0">
+            <strong>Căn hộ:</strong>
+
+            <span>{invoice.apartment?.code ?? '—'}</span>
+          </ListGroup.Item>
+          <ListGroup.Item className="d-flex justify-content-between px-0">
+            <strong>Người thuê:</strong>
+            <span>{invoice.resident?.name ?? '—'}</span>
+          </ListGroup.Item>
+          <ListGroup.Item className="d-flex justify-content-between px-0">
+            <strong>Kỳ:</strong>
+            <span>{dayjs(invoice.billing_period).format('MM/YYYY')}</span>
+          </ListGroup.Item>
+
+          <ListGroup.Item className="d-flex justify-content-between px-0 text-danger">
+            <strong>Còn nợ:</strong>
+            <span className="fw-bold">{invoice.balance?.toLocaleString()} đ</span>
+          </ListGroup.Item>
+        </ListGroup>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Mức nhắc nợ</Form.Label>
+          <Form.Select
+            value={level}
+            onChange={(e) => setLevel(e.target.value)}
+            disabled={loading}
+          >
+            {levels.map((l) => (
+              <option key={l.value} value={l.value}>
+                {l.label}
+              </option>
+            ))}
+          </Form.Select>
         </Form.Group>
       </Modal.Body>
 

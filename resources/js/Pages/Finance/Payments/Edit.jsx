@@ -1,97 +1,173 @@
-import React from 'react';
-import { useForm, Link } from '@inertiajs/react';
-import { Form, Button } from 'react-bootstrap';
+import React from "react";
+import { useForm, Link } from "@inertiajs/react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Card,
+  Spinner,
+} from "react-bootstrap";
 
 export default function EditPayment({ payment, invoices }) {
   const { data, setData, put, processing, errors } = useForm({
-    invoice_id: payment.invoice_id || '',
-    payer_name: payment.payer_name || '',
-    amount: payment.amount || '',
-    method: payment.method || 'cash',
-    payment_date: payment.payment_date || '',
-    note: payment.note || ''
+    invoice_id: payment.invoice_id || "",
+    payer_name: payment.payer_name || "",
+    amount: payment.amount || "",
+    method: payment.method || "cash",
+    payment_date: payment.payment_date 
+                    ? new Date(payment.payment_date).toISOString().slice(0, 10) 
+                    : "",
+    note: payment.note || "",
   });
 
   const submit = (e) => {
     e.preventDefault();
-    put(route('payments.update', payment.id));
+    put(route("payments.update", payment.id));
   };
-
+  
   return (
-    <div className="container mt-4">
-      <h3>Chỉnh sửa thanh toán #{payment.id}</h3>
-      <Form onSubmit={submit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Hóa đơn liên quan</Form.Label>
-          <Form.Select
-            value={data.invoice_id}
-            onChange={(e) => setData('invoice_id', e.target.value)}
-          >
-            <option value="">Không chọn</option>
-            {invoices.map((inv) => (
-              <option key={inv.id} value={inv.id}>
-                #{inv.id} - Căn hộ {inv.apartment_no}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+    <Container fluid className="bg-light min-vh-100 py-5">
+      <Container>
+        <Row className="justify-content-center">
+          <Col lg={8}>
+            <Card className="shadow-sm border-0" style={{ borderRadius: '15px' }}>
+              <Card.Body className="p-4 p-md-5">
+                <Row className="align-items-center mb-4">
+                  <Col>
+                    <h2 className="mb-0 fw-bold">
+                      Chỉnh sửa thanh toán #{payment.id}
+                    </h2>
+                  </Col>
+                  <Col xs="auto">
+                    <Link
+                      href={route("payments.index")}
+                      className="btn btn-secondary"
+                    >
+                      ← Quay lại
+                    </Link>
+                  </Col>
+                </Row>
+                <Form onSubmit={submit}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Hóa đơn liên quan</Form.Label>
+                    <Form.Select
+                      value={data.invoice_id}
+                      onChange={(e) => setData("invoice_id", e.target.value)}
+                      isInvalid={errors.invoice_id}
+                    >
+                      <option value="">-- Chọn hóa đơn --</option>
+                      {invoices.map((inv) => (
+                        <option key={inv.id} value={inv.id}>
+                          {inv.code
+                            ? `${inv.code} — Căn hộ ${inv.apartment?.id || ""}`
+                            : `#${inv.id} — Căn hộ ${inv.apartment?.id || ""}`}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.invoice_id}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Người nộp</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Tên người nộp (nếu có)"
+                          value={data.payer_name}
+                          onChange={(e) => setData("payer_name", e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Ngày thanh toán</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={data.payment_date}
+                          onChange={(e) =>
+                            setData("payment_date", e.target.value)
+                          }
+                          isInvalid={errors.payment_date}
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Người nộp</Form.Label>
-          <Form.Control
-            type="text"
-            value={data.payer_name}
-            onChange={(e) => setData('payer_name', e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Số tiền</Form.Label>
-          <Form.Control
-            type="number"
-            value={data.amount}
-            onChange={(e) => setData('amount', e.target.value)}
-            isInvalid={errors.amount}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Phương thức thanh toán</Form.Label>
-          <Form.Select
-            value={data.method}
-            onChange={(e) => setData('method', e.target.value)}
-          >
-            <option value="cash">Tiền mặt</option>
-            <option value="bank">Chuyển khoản</option>
-            <option value="credit">Thẻ</option>
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Ngày thanh toán</Form.Label>
-          <Form.Control
-            type="date"
-            value={data.payment_date}
-            onChange={(e) => setData('payment_date', e.target.value)}
-            isInvalid={errors.payment_date}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Ghi chú</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={data.note}
-            onChange={(e) => setData('note', e.target.value)}
-          />
-        </Form.Group>
-
-        <Button type="submit" disabled={processing}>Cập nhật</Button>{' '}
-        <Link href={route('payments.index')}>
-          <Button variant="secondary">Quay lại</Button>
-        </Link>
-      </Form>
-    </div>
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Số tiền</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder="Nhập số tiền"
+                          step="1000"
+                          value={data.amount}
+                          onChange={(e) => setData("amount", e.target.value)}
+                          isInvalid={errors.amount}
+                          required
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.amount}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Phương thức</Form.Label>
+                        <Form.Select
+                          value={data.method}
+                          onChange={(e) => setData("method", e.target.value)}
+                        >
+                          <option value="cash">Tiền mặt</option>
+                          <option value="bank_transfer">Chuyển khoản</option>
+                          <option value="card">Thẻ</option>
+                          <option value="other">Khác</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Ghi chú</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Thông tin thêm (số tài khoản, v.v...)"
+                      value={data.note}
+                      onChange={(e) => setData("note", e.target.value)}
+                    />
+                  </Form.Group>
+                  <div className="d-grid mt-5">
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      size="lg"
+                      disabled={processing}
+                    >
+                      {processing ? (
+                        <>
+                          <Spinner
+                            animation="border"
+                            size="sm"
+                            className="me-2"
+                          />
+                          Đang cập nhật...
+                        </>
+                      ) : (
+                        "Cập nhật"
+                      )}
+                    </Button>
+                  </div>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </Container>
   );
 }

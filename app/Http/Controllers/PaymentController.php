@@ -20,10 +20,10 @@ class PaymentController extends Controller
     public function create()
     {
         $invoices = Invoice::query()
-        ->with(['apartment:id,number']) // đổi 'number' thành 'apartment_no' hay 'code' theo DB của bạn
+        ->with(['apartment:id,code']) // đổi 'number' thành 'apartment_no' hay 'code' theo DB của bạn
         ->select('id', 'code', 'apartment_id', 'billing_period', 'total', 'paid', 'balance', 'status')
         ->orderByDesc('billing_period')
-        ->limit(200) // tránh load quá nặng, tuỳ bạn
+        ->limit(200)// tránh load quá nặng, tuỳ bạn
         ->get()
         // Chuẩn hoá dữ liệu để frontend hiển thị label đẹp, giảm logic phía client
         ->map(function ($inv) {
@@ -66,7 +66,7 @@ class PaymentController extends Controller
 
     public function edit(Payment $payment)
     {
-        $invoices = Invoice::select('id', 'apartment_no')->get();
+        $invoices = Invoice::select('id', 'code')->get();
         return Inertia::render('Finance/Payments/Edit', [
             'payment' => $payment,
             'invoices' => $invoices

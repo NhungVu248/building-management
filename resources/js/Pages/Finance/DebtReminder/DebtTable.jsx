@@ -1,27 +1,45 @@
 import React from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Badge } from 'react-bootstrap';
 import dayjs from 'dayjs';
 
 export default function DebtTable({ data, onSelect }) {
+  const getStatusBadge = (status, balance) => {
+    if (balance > 0) {
+      if (status === 'Quá hạn') {
+        return <Badge bg="danger">Quá hạn</Badge>;
+      }
+      return <Badge bg="warning" text="dark">Chưa thanh toán</Badge>;
+    }
+
+    if (status === 'Đã thanh toán') {
+      return <Badge bg="success">Đã thanh toán</Badge>;
+    }
+    switch (status) {
+      case 'Đã hủy':
+        return <Badge bg="secondary">Đã hủy</Badge>;
+      default:
+        return <Badge bg="light" text="dark">{status}</Badge>;
+    }
+  };
   return (
-    <Table striped bordered hover responsive>
-      <thead className="table-light">
+    <Table hover responsive className="align-middle">
+      <thead>
         <tr>
           <th>Mã hóa đơn</th>
           <th>Căn hộ</th>
           <th>Người thuê</th>
           <th>Kỳ</th>
-          <th>Tổng</th>
-          <th>Đã trả</th>
-          <th>Còn nợ</th>
-          <th>Trạng thái</th>
-          <th>Thao tác</th>
+          <th className="text-end">Tổng</th>
+          <th className="text-end">Đã trả</th>
+          <th className="text-end">Còn nợ</th>
+          <th className="text-center">Trạng thái</th>
+          <th className="text-end">Thao tác</th>
         </tr>
       </thead>
       <tbody>
         {data.length === 0 && (
           <tr>
-            <td colSpan={9} className="text-center text-muted">
+            <td colSpan={9} className="text-center text-muted py-3">
               Không có hóa đơn nào còn nợ 💸
             </td>
           </tr>
@@ -29,19 +47,23 @@ export default function DebtTable({ data, onSelect }) {
 
         {data.map((inv) => (
           <tr key={inv.id}>
-            <td>{inv.code}</td>
-            <td>{inv.apartment?.id ?? '—'}</td>
-            <td>{inv.resident?.name ?? '—'}</td>
+            <td className="fw-bold">{inv.code}</td>
+            <td>{inv.apartment?.code ?? '—'}</td>
+            <td>{inv.resident?.name ?? '—'}D</td>
             <td>{dayjs(inv.billing_period).format('MM/YYYY')}</td>
-            <td>{inv.total.toLocaleString()} đ</td>
-            <td>{inv.paid.toLocaleString()} đ</td>
-            <td className="fw-bold text-danger">{inv.balance.toLocaleString()} đ</td>
-            <td>{inv.status}</td>
-            <td>
+            <td className="text-end">{inv.total.toLocaleString()} đ</td>
+            <td className="text-end">{inv.paid.toLocaleString()} đ</td>
+            <td className="fw-bold text-danger text-end">
+              {inv.balance.toLocaleString()} đ
+            </td>
+            <td className="text-center">
+              {getStatusBadge(inv.status, inv.balance)}
+            </td>
+            <td className="text-end">
               <Button
                 size="sm"
                 variant="outline-primary"
-                onClick={() => onSelect(inv)}
+                onClick={() => onSelect(inv)} 
               >
                 Nhắc nợ
               </Button>

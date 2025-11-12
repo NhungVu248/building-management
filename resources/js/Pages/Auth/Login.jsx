@@ -1,4 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import bg from '@/assets/images/toanha.jpg'; // ✅ ảnh asset qua Vite
 
 export default function Login({ status, canResetPassword }) {
   const { data, setData, post, processing, errors, reset } = useForm({
@@ -17,9 +18,9 @@ export default function Login({ status, canResetPassword }) {
       <Head title="Log in" />
 
       <div className="min-h-screen relative">
-        {/* Background */}
+        {/* Background từ asset */}
         <img
-          src="https://images.unsplash.com/photo-1465804575741-338df8554e0b?q=80&w=2400&auto=format&fit=crop"
+          src={bg}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -30,7 +31,9 @@ export default function Login({ status, canResetPassword }) {
           <div className="w-full max-w-md">
             {/* App title */}
             <div className="text-center mb-6">
-              <h1 className="text-white text-4xl font-semibold tracking-[0.3em]">INNOPPL</h1>
+              <h1 className="text-white text-4xl font-semibold tracking-[0.3em]">
+                LOGIN
+              </h1>
             </div>
 
             {/* Status */}

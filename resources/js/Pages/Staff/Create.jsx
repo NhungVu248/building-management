@@ -1,157 +1,176 @@
-import React, { useState } from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
-import { Form, Button, Container, Card, Image } from 'react-bootstrap';
+import { useState } from 'react';
 
 export default function Create() {
   const [preview, setPreview] = useState(null);
 
-  const { data, setData, post, processing, errors } = useForm({
+  const { data, setData, post, processing, errors, reset } = useForm({
     name: '',
     email: '',
     phone: '',
     position: '',
     department: '',
-    avatar: null, // ✅ thêm avatar
+    avatar: null,
   });
 
-  const handleSubmit = (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    post('/staff', {
-      forceFormData: true, // ✅ Bắt buộc để gửi file qua Inertia
-      onSuccess: () => setPreview(null),
+    post(route('staff.store'), {
+      forceFormData: true,
+      onSuccess: () => {
+        setPreview(null);
+        reset('avatar');
+      },
     });
   };
 
   const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    setData('avatar', file);
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    } else {
-      setPreview(null);
-    }
+    const file = e.target.files?.[0];
+    setData('avatar', file ?? null);
+    setPreview(file ? URL.createObjectURL(file) : null);
   };
 
   return (
     <>
-      <Head title="Thêm nhân sự mới" />
-      <Container className="mt-5">
-        <Card className="shadow-sm">
-          <Card.Body>
-            <h2 className="mb-4 text-center">Thêm nhân sự mới</h2>
+      <Head title="Thêm nhân viên" />
 
-            <Form onSubmit={handleSubmit} encType="multipart/form-data">
+      {/* HERO */}
+      <section className="relative">
+        <img
+          src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=2400&auto=format&fit=crop"
+          alt=""
+          className="h-48 w-full object-cover md:h-60"
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-0 flex items-center">
+          <div className="mx-auto max-w-7xl px-4">
+            <h1 className="text-2xl md:text-3xl font-semibold text-white">Add Staff</h1>
+            <p className="mt-1 text-white/80 max-w-xl text-sm">
+              Nhập thông tin nhân sự và tải ảnh đại diện.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTENT */}
+      <div className="bg-slate-50 min-h-[calc(100vh-12rem)]">
+        <div className="mx-auto max-w-7xl px-4 py-6">
+          <div className="mx-auto max-w-3xl rounded-2xl border bg-white shadow-sm p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-800">Thêm nhân sự mới</h2>
+              <Link
+                href={route('staff.index')}
+                className="text-sm text-slate-500 hover:text-indigo-600"
+              >
+                ← Quay lại danh sách
+              </Link>
+            </div>
+
+            <form onSubmit={submit} className="grid grid-cols-1 gap-4">
               {/* Họ tên */}
-              <Form.Group className="mb-3">
-                <Form.Label>Họ tên</Form.Label>
-                <Form.Control
-                  value={data.name}
-                  onChange={(e) => setData('name', e.target.value)}
-                  placeholder="Nhập họ tên nhân sự"
-                />
-                {errors.name && (
-                  <div className="text-danger small mt-1">{errors.name}</div>
-                )}
-              </Form.Group>
+              <Field
+                label="Họ tên"
+                value={data.name}
+                onChange={(v) => setData('name', v)}
+                error={errors.name}
+              />
 
               {/* Email */}
-              <Form.Group className="mb-3">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  value={data.email}
-                  onChange={(e) => setData('email', e.target.value)}
-                  placeholder="Nhập email công việc"
-                />
-                {errors.email && (
-                  <div className="text-danger small mt-1">{errors.email}</div>
-                )}
-              </Form.Group>
+              <Field
+                label="Email"
+                type="email"
+                value={data.email}
+                onChange={(v) => setData('email', v)}
+                error={errors.email}
+                placeholder="email@company.com"
+              />
 
               {/* Số điện thoại */}
-              <Form.Group className="mb-3">
-                <Form.Label>Số điện thoại</Form.Label>
-                <Form.Control
-                  value={data.phone}
-                  onChange={(e) => setData('phone', e.target.value)}
-                  placeholder="Nhập số điện thoại"
-                />
-                {errors.phone && (
-                  <div className="text-danger small mt-1">{errors.phone}</div>
-                )}
-              </Form.Group>
+              <Field
+                label="Số điện thoại"
+                value={data.phone}
+                onChange={(v) => setData('phone', v)}
+                error={errors.phone}
+              />
 
               {/* Chức vụ */}
-              <Form.Group className="mb-3">
-                <Form.Label>Chức vụ</Form.Label>
-                <Form.Control
-                  value={data.position}
-                  onChange={(e) => setData('position', e.target.value)}
-                  placeholder="VD: Kế toán, Bảo vệ, Kỹ thuật..."
-                />
-                {errors.position && (
-                  <div className="text-danger small mt-1">{errors.position}</div>
-                )}
-              </Form.Group>
+              <Field
+                label="Chức vụ"
+                value={data.position}
+                onChange={(v) => setData('position', v)}
+                error={errors.position}
+                placeholder="VD: Kế toán, Bảo vệ, Kỹ thuật…"
+              />
 
               {/* Phòng ban */}
-              <Form.Group className="mb-4">
-                <Form.Label>Phòng ban</Form.Label>
-                <Form.Control
-                  value={data.department}
-                  onChange={(e) => setData('department', e.target.value)}
-                  placeholder="VD: Hành chính, Tài chính, Bảo trì..."
-                />
-                {errors.department && (
-                  <div className="text-danger small mt-1">{errors.department}</div>
-                )}
-              </Form.Group>
+              <Field
+                label="Phòng ban"
+                value={data.department}
+                onChange={(v) => setData('department', v)}
+                error={errors.department}
+                placeholder="VD: Hành chính, Tài chính, Bảo trì…"
+              />
 
-              {/* Ảnh đại diện */}
-              <Form.Group className="mb-4">
-                <Form.Label>Ảnh đại diện</Form.Label>
-                <Form.Control
+              {/* Avatar upload */}
+              <div>
+                <label className="block text-sm text-slate-700">Ảnh đại diện</label>
+                <input
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarChange}
+                  className="mt-1 block w-full text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
                 />
                 {errors.avatar && (
-                  <div className="text-danger small mt-1">{errors.avatar}</div>
+                  <p className="mt-1 text-sm text-red-600">{errors.avatar}</p>
                 )}
 
                 {preview && (
-                  <div className="mt-3 text-center">
-                    <Image
+                  <div className="mt-3 flex flex-col items-center">
+                    <img
                       src={preview}
                       alt="Preview"
-                      roundedCircle
-                      style={{
-                        width: '120px',
-                        height: '120px',
-                        objectFit: 'cover',
-                        border: '2px solid #ddd',
-                      }}
+                      className="h-[120px] w-[120px] rounded-full border-2 border-slate-200 object-cover"
                     />
-                    <p className="text-muted small mt-1">Ảnh xem trước</p>
+                    <p className="mt-1 text-xs text-slate-500">Ảnh xem trước</p>
                   </div>
                 )}
-              </Form.Group>
-
-              {/* Nút hành động */}
-              <div className="d-flex justify-content-end gap-2">
-                <Button type="submit" disabled={processing}>
-                  {processing ? 'Đang lưu...' : 'Lưu'}
-                </Button>
-                <Link href="/staff">
-                  <Button variant="secondary" type="button">
-                    Hủy
-                  </Button>
-                </Link>
               </div>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Container>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <Link
+                  href={route('staff.index')}
+                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50"
+                >
+                  Hủy
+                </Link>
+                <button
+                  type="submit"
+                  disabled={processing}
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-70"
+                >
+                  {processing ? 'Đang lưu…' : 'Lưu'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </>
+  );
+}
+
+function Field({ label, type = 'text', value, onChange, error, placeholder }) {
+  return (
+    <div>
+      <label className="block text-sm text-slate-700">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+      />
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+    </div>
   );
 }

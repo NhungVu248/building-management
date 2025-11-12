@@ -19,7 +19,7 @@ class InvoiceController extends Controller
 
   public function show(Invoice $invoice){
     $invoice->load(['items.feeType','payments','apartment','resident']);
-    return Inertia::render('Finance/InvoiceDetail', ['invoice'=>$invoice]);
+    return Inertia::render('Finance/Invoices/Show', ['invoice'=>$invoice]);
   }
 
   // Tạo hóa đơn tháng cho 1 căn hộ
@@ -106,7 +106,7 @@ class InvoiceController extends Controller
         'billing_period' => 'required|date',
         'discount' => 'nullable|numeric',
         'status' => 'required|string',
-        'items' => 'array',
+        'items' => 'present|array', 
     ]);
 
     $invoice->update([
@@ -118,14 +118,25 @@ class InvoiceController extends Controller
     // Cập nhật danh sách item
     $existingIds = [];
     foreach ($data['items'] as $item) {
+      $qty = (float)($item['qty'] ?? 1);
+            $unit = (float)($item['unit_price'] ?? 0);
+            $amount = $qty * $unit;
+ 
+            $itemData = [
+                'fee_type_id' => $item['fee_type_id'],
+                'description' => $item['description'] ?? '', 
+                'qty' => $qty,
+                'unit_price' => $unit,
+                'amount' => $amount, // <-- Thêm trường amount đã tính
+            ];
         if (isset($item['id']) && $item['id']) {
             $ii = $invoice->items()->find($item['id']);
             if ($ii) {
-                $ii->update($item);
+                $ii->update($itemData);
                 $existingIds[] = $ii->id;
             }
         } else {
-            $new = $invoice->items()->create($item);
+            $new = $invoice->items()->create($itemData);
             $existingIds[] = $new->id;
         }
     }
@@ -160,8 +171,8 @@ class InvoiceController extends Controller
         'apartments' => $apartments,
     ]);
 }
-  public function destroy(Invoice $invoice){
+    public function destroy(Invoice $invoice){
     $invoice->delete();
     return redirect()->route('invoices.index');
-  }
+  } 
 }

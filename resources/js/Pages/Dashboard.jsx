@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import {
   Navbar,
@@ -11,20 +11,19 @@ import {
   Card,
   Table,
   Badge,
+  Image,
+  Dropdown,
 } from "react-bootstrap";
 
 export default function Dashboard() {
   const { auth, summary = {}, announcements = [], tickets = [] } = usePage().props;
 
   const cards = [
-    // --- Phase 1–3: Các module gốc ---
     { id: 1, label: "👥 Nhân sự", value: summary.staff ?? 0, route: "/staff" },
     { id: 2, label: "🏘️ Căn hộ", value: summary.apartments ?? 0, route: "/apartments" },
     { id: 3, label: "👪 Cư dân", value: summary.residents ?? 0, route: "/residents" },
     { id: 4, label: "🛠️ Bảo trì (đang mở)", value: summary.maintenance ?? 0, route: "/maintenance" },
     { id: 5, label: "💰 Hóa đơn chưa thanh toán", value: summary.unpaidInvoices ?? 0, route: "/invoices" },
-
-    // --- Phase 5: Các module vận hành mới ---
     { id: 6, label: "🎫 Thẻ ra/vào", value: summary.accessCards ?? 0, route: "/access-cards" },
     { id: 7, label: "🚗 Phương tiện", value: summary.vehicles ?? 0, route: "/vehicles" },
     { id: 8, label: "🚪 Lượt ra/vào", value: summary.accessLogs ?? 0, route: "/access-logs" },
@@ -32,16 +31,23 @@ export default function Dashboard() {
     { id: 10, label: "🗓️ Lịch bảo dưỡng", value: summary.maintenanceSchedules ?? 0, route: "/maintenance-schedules" },
   ];
 
+  // ✅ Xác định URL avatar (ưu tiên ảnh thật, fallback UI avatar)
+  const avatarUrl = auth?.user?.avatar
+    ? `/storage/${auth.user.avatar}`
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(auth?.user?.name || "A")}&background=random`;
+
   return (
     <>
-      {/* NAVBAR GIỮ NGUYÊN */}
+      {/* --- NAVBAR --- */}
       <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="shadow-sm">
         <Container>
           <Navbar.Brand href="/dashboard" className="fw-bold text-uppercase">
             🏢 Quản lý Tòa nhà
           </Navbar.Brand>
+
           <Navbar.Toggle aria-controls="main-navbar" />
           <Navbar.Collapse id="main-navbar">
+            {/* --- Menu chính --- */}
             <Nav className="me-auto">
               <Nav.Link as={Link} href="/staff">👥 Hệ thống & Nhân sự</Nav.Link>
 
@@ -53,7 +59,7 @@ export default function Dashboard() {
               <NavDropdown title="👪 Cư dân & Tiện ích" id="nav-r3">
                 <NavDropdown.Item as={Link} href="/residents">Cư dân</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/amenities">Tiện ích cộng đồng</NavDropdown.Item>
-                <NavDropdown.Item as={Link} href="/bookings">Đặt lịch sử dụng tiện ích</NavDropdown.Item>
+                <NavDropdown.Item as={Link} href="/bookings">Đặt lịch tiện ích</NavDropdown.Item>
               </NavDropdown>
 
               <NavDropdown title="🛠️ Vận hành" id="nav-r4">
@@ -72,27 +78,52 @@ export default function Dashboard() {
                 <NavDropdown.Item as={Link} href="/fee-types">Loại phí</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/invoices">Hóa đơn</NavDropdown.Item>
                 <NavDropdown.Item as={Link} href="/payments">Thanh toán</NavDropdown.Item>
-                {/* ➕ Thêm mới dòng này */}
                 <NavDropdown.Item as={Link} href="/debts">Nhắc nợ</NavDropdown.Item>
-                {/* ⬆️ */}
                 <NavDropdown.Item as={Link} href="/reports">Báo cáo thu chi</NavDropdown.Item>
-             </NavDropdown>
-
+              </NavDropdown>
             </Nav>
 
+            {/* --- Khu vực người dùng (avatar + menu profile) --- */}
             <Nav className="ms-auto align-items-center">
-              <span className="text-light me-3">
+              <span className="text-light me-2 small">
                 Xin chào, <strong>{auth?.user?.name || "Admin"}</strong>
               </span>
-              <Button
-                variant="outline-light"
-                size="sm"
-                as={Link}
-                href={route("logout")}
-                method="post"
-              >
-                🚪 Đăng xuất
-              </Button>
+
+              <Dropdown align="end">
+                <Dropdown.Toggle as="div" className="border-0 bg-transparent p-0 cursor-pointer">
+                  <Image
+                    src={avatarUrl}
+                    alt="avatar"
+                    roundedCircle
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      objectFit: "cover",
+                      border: "2px solid #fff",
+                      cursor: "pointer",
+                    }}
+                  />
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu align="end">
+                  <Dropdown.Header className="text-center">
+                    <strong>{auth?.user?.name}</strong>
+                    <div className="small text-muted">{auth?.user?.email}</div>
+                  </Dropdown.Header>
+                  <Dropdown.Divider />
+                  <Dropdown.Item as={Link} href={route("profile.edit")}>
+                    👤 Hồ sơ cá nhân
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    as={Link}
+                    href={route("logout")}
+                    method="post"
+                    className="text-danger"
+                  >
+                    🚪 Đăng xuất
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </Nav>
           </Navbar.Collapse>
         </Container>

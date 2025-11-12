@@ -38,7 +38,15 @@ class ProfileController extends Controller
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
+        if ($request->hasFile('avatar')) {
+        // Xóa avatar cũ nếu có
+        if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+            \Storage::disk('public')->delete($user->avatar);
+        }
 
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = $path;
+    }
         $user->save();
 
         // ✅ Ghi lại nhật ký thay đổi hồ sơ
@@ -49,7 +57,7 @@ class ProfileController extends Controller
             'user_agent'=> $request->userAgent(),
             'meta'      => [
                 'before' => $old,
-                'after'  => $user->only(['name', 'email']),
+                'after'  => $user->only(['name', 'email','avatar']),
             ],
         ]);
 

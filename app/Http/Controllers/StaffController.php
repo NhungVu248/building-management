@@ -52,8 +52,11 @@ class StaffController extends Controller
             'position'   => ['nullable', 'string', 'max:255'],
             'department' => ['nullable', 'string', 'max:255'],
             'note'       => ['nullable', 'string'],
+            'avatar'     => ['nullable', 'image', 'max:2048'],
         ]);
-
+        if ($request->hasFile('avatar')) {
+        $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
         Staff::create($data);
 
         return redirect()
@@ -81,8 +84,16 @@ class StaffController extends Controller
             'position'   => ['nullable', 'string', 'max:255'],
             'department' => ['nullable', 'string', 'max:255'],
             'note'       => ['nullable', 'string'],
+            'avatar'     => ['nullable', 'image', 'max:2048'],
         ]);
+        if ($request->hasFile('avatar')) {
+        // Xoá file cũ nếu có
+        if ($staff->avatar && \Storage::disk('public')->exists($staff->avatar)) {
+            \Storage::disk('public')->delete($staff->avatar);
+        }
 
+        $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
         $staff->update($data);
 
         return redirect()

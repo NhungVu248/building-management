@@ -10,7 +10,7 @@ use App\Http\Controllers\AmenityBookingController;
 use App\Http\Controllers\SecurityIncidentController;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ContractController;
-
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | Hệ thống route chính cho ứng dụng Quản lý Tòa Nhà
@@ -25,6 +25,7 @@ use App\Http\Controllers\ContractController;
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');
+
 Route::post('/logout', function (Request $request) {
     Auth::guard('web')->logout();
     $request->session()->invalidate();
@@ -88,5 +89,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('reports.index'); 
     Route::get('/debts', [App\Http\Controllers\DebtController::class,'index'])->name('debts.index');
   Route::post('/debts/{invoice}/remind', [App\Http\Controllers\DebtController::class,'remind'])->name('debts.remind');
+  Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 require __DIR__.'/auth.php';

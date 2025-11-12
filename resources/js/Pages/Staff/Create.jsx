@@ -1,19 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
-import { Form, Button, Container, Card } from 'react-bootstrap';
+import { Form, Button, Container, Card, Image } from 'react-bootstrap';
 
 export default function Create() {
+  const [preview, setPreview] = useState(null);
+
   const { data, setData, post, processing, errors } = useForm({
     name: '',
     email: '',
     phone: '',
     position: '',
     department: '',
+    avatar: null, // ✅ thêm avatar
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    post('/staff');
+    post('/staff', {
+      forceFormData: true, // ✅ Bắt buộc để gửi file qua Inertia
+      onSuccess: () => setPreview(null),
+    });
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    setData('avatar', file);
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    } else {
+      setPreview(null);
+    }
   };
 
   return (
@@ -24,7 +40,7 @@ export default function Create() {
           <Card.Body>
             <h2 className="mb-4 text-center">Thêm nhân sự mới</h2>
 
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} encType="multipart/form-data">
               {/* Họ tên */}
               <Form.Group className="mb-3">
                 <Form.Label>Họ tên</Form.Label>
@@ -60,6 +76,9 @@ export default function Create() {
                   onChange={(e) => setData('phone', e.target.value)}
                   placeholder="Nhập số điện thoại"
                 />
+                {errors.phone && (
+                  <div className="text-danger small mt-1">{errors.phone}</div>
+                )}
               </Form.Group>
 
               {/* Chức vụ */}
@@ -70,6 +89,9 @@ export default function Create() {
                   onChange={(e) => setData('position', e.target.value)}
                   placeholder="VD: Kế toán, Bảo vệ, Kỹ thuật..."
                 />
+                {errors.position && (
+                  <div className="text-danger small mt-1">{errors.position}</div>
+                )}
               </Form.Group>
 
               {/* Phòng ban */}
@@ -80,6 +102,39 @@ export default function Create() {
                   onChange={(e) => setData('department', e.target.value)}
                   placeholder="VD: Hành chính, Tài chính, Bảo trì..."
                 />
+                {errors.department && (
+                  <div className="text-danger small mt-1">{errors.department}</div>
+                )}
+              </Form.Group>
+
+              {/* Ảnh đại diện */}
+              <Form.Group className="mb-4">
+                <Form.Label>Ảnh đại diện</Form.Label>
+                <Form.Control
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                />
+                {errors.avatar && (
+                  <div className="text-danger small mt-1">{errors.avatar}</div>
+                )}
+
+                {preview && (
+                  <div className="mt-3 text-center">
+                    <Image
+                      src={preview}
+                      alt="Preview"
+                      roundedCircle
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        objectFit: 'cover',
+                        border: '2px solid #ddd',
+                      }}
+                    />
+                    <p className="text-muted small mt-1">Ảnh xem trước</p>
+                  </div>
+                )}
               </Form.Group>
 
               {/* Nút hành động */}

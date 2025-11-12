@@ -1,6 +1,4 @@
-import React from 'react';
-import { useForm, Link } from '@inertiajs/react';
-import { Container, Form, Button, Card } from 'react-bootstrap';
+import { Head, useForm, Link } from '@inertiajs/react';
 
 export default function Create() {
   const { data, setData, post, processing, errors } = useForm({
@@ -19,78 +17,119 @@ export default function Create() {
   };
 
   return (
-    <Container className="py-3">
-      <Card className="p-4 shadow-sm">
-        <h4 className="mb-3">Thêm cư dân mới</h4>
+    <>
+      <Head title="Thêm cư dân" />
 
-        <Form onSubmit={submit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Họ tên</Form.Label>
-            <Form.Control
+      <div className="min-h-screen bg-slate-50 p-6">
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-slate-800">Thêm cư dân mới</h1>
+            <Link
+              href={route('residents.index')}
+              className="text-sm text-slate-500 hover:text-indigo-600"
+            >
+              ← Quay lại danh sách
+            </Link>
+          </div>
+
+          <form onSubmit={submit} className="grid grid-cols-1 gap-4">
+            <Field
+              label="Họ tên"
               value={data.name}
-              onChange={(e) => setData('name', e.target.value)}
+              onChange={(v) => setData('name', v)}
+              error={errors.name}
             />
-            {errors.name && <div className="text-danger">{errors.name}</div>}
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>CCCD</Form.Label>
-            <Form.Control
+            <Field
+              label="CCCD"
               value={data.cccd}
-              onChange={(e) => setData('cccd', e.target.value)}
+              onChange={(v) => setData('cccd', v)}
+              error={errors.cccd}
             />
-            {errors.cccd && <div className="text-danger">{errors.cccd}</div>}
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Điện thoại</Form.Label>
-            <Form.Control
+            <Field
+              label="Điện thoại"
               value={data.phone}
-              onChange={(e) => setData('phone', e.target.value)}
+              onChange={(v) => setData('phone', v)}
+              error={errors.phone}
             />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
+            <Field
+              label="Email"
               type="email"
               value={data.email}
-              onChange={(e) => setData('email', e.target.value)}
+              onChange={(v) => setData('email', v)}
+              error={errors.email}
             />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Trạng thái</Form.Label>
-            <Form.Select
-              value={data.status}
-              onChange={(e) => setData('status', e.target.value)}
-            >
-              <option value="dang_o">Đang ở</option>
-              <option value="tam_vang">Tạm vắng</option>
-              <option value="chuyen_di">Chuyển đi</option>
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Ghi chú</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={data.note}
-              onChange={(e) => setData('note', e.target.value)}
+            {/* Nếu chưa có danh sách căn hộ thì để input text; có rồi bạn thay bằng <select> */}
+            <Field
+              label="Căn hộ (apartment_id)"
+              value={data.apartment_id}
+              onChange={(v) => setData('apartment_id', v)}
+              error={errors.apartment_id}
+              placeholder="VD: 101 hoặc ID căn hộ"
             />
-          </Form.Group>
 
-          <div className="d-flex justify-content-end">
-            <Link href={route('residents.index')} className="btn btn-secondary me-2">
-              Hủy
-            </Link>
-            <Button type="submit" disabled={processing}>
-              Lưu
-            </Button>
-          </div>
-        </Form>
-      </Card>
-    </Container>
+            <div>
+              <label className="block text-sm text-slate-700">Trạng thái</label>
+              <select
+                value={data.status}
+                onChange={(e) => setData('status', e.target.value)}
+                className="mt-1 w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="dang_o">Đang ở</option>
+                <option value="tam_vang">Tạm vắng</option>
+                <option value="chuyen_di">Chuyển đi</option>
+              </select>
+              {errors.status && (
+                <p className="mt-1 text-sm text-red-600">{errors.status}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm text-slate-700">Ghi chú</label>
+              <textarea
+                rows="3"
+                value={data.note}
+                onChange={(e) => setData('note', e.target.value)}
+                className="mt-1 w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              {errors.note && (
+                <p className="mt-1 text-sm text-red-600">{errors.note}</p>
+              )}
+            </div>
+
+            <div className="pt-2 flex items-center justify-end gap-3">
+              <Link
+                href={route('residents.index')}
+                className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                Hủy
+              </Link>
+              <button
+                type="submit"
+                disabled={processing}
+                className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-70"
+              >
+                {processing ? 'Đang lưu…' : 'Lưu'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Field({ label, type = 'text', value, onChange, error, placeholder }) {
+  return (
+    <div>
+      <label className="block text-sm text-slate-700">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="mt-1 w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+    </div>
   );
 }

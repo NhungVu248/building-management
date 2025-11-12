@@ -144,7 +144,22 @@ class InvoiceController extends Controller
         'feeTypes'   => $feeTypes,
     ]);
     }
+    public function edit(Invoice $invoice)
+{
+    // Load các quan hệ để đưa dữ liệu ra form edit
+    $invoice->load(['items.feeType', 'apartment', 'resident']);
 
+    // Lấy danh sách căn hộ và loại phí để chọn lại khi sửa
+    $apartments = Apartment::select('id', 'code')->get();
+    $feeTypes   = FeeType::select('id', 'name')->get();
+
+    // Render trang Edit (Inertia React)
+    return Inertia::render('Finance/Invoices/Edit', [
+        'invoice'    => $invoice,
+        'feeTypes'   => $feeTypes,
+        'apartments' => $apartments,
+    ]);
+}
   public function destroy(Invoice $invoice){
     $invoice->delete();
     return redirect()->route('invoices.index');

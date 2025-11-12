@@ -81,7 +81,7 @@ Route::middleware(['auth'])->group(function () {
     // 💰 R5 – Tài chính & nghiệp vụ
     Route::resource('fee-types', App\Http\Controllers\FeeTypeController::class);
     Route::resource('invoices', App\Http\Controllers\InvoiceController::class)
-    ->only(['index','show','create','store','update','destroy']);
+    ->only(['index','show','create','store','update','destroy','edit']);
     Route::post('/invoices/generate-monthly', [App\Http\Controllers\InvoiceController::class,'generateMonthly'])->name('invoices.generateMonthly');
     Route::resource('payments', App\Http\Controllers\PaymentController::class);
     Route::get('/reports', [App\Http\Controllers\FinanceReportController::class, 'index'])

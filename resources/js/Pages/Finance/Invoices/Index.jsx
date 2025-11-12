@@ -62,7 +62,7 @@ export default function InvoiceIndex({ data }) {
             <th>Đã trả</th>
             <th>Còn nợ</th>
             <th>Trạng thái</th>
-            <th></th>
+            <th className="text-center">Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -75,21 +75,35 @@ export default function InvoiceIndex({ data }) {
               <td>{inv.paid.toLocaleString()}</td>
               <td>{inv.balance.toLocaleString()}</td>
               <td>{inv.status}</td>
-              <td>
-                <Link
-                  href={route("invoices.show", inv.id)}
-                  className="btn btn-sm btn-primary me-2"
-                >
-                  Chi tiết
-                </Link>
-                <Link
-                  href={route("invoices.destroy", inv.id)}
-                  method="delete"
-                  as="button"
-                  className="btn btn-sm btn-danger"
-                >
-                  Xóa
-                </Link>
+              <td className="text-center">
+                <div className="d-flex justify-content-center gap-2">
+                  <Link
+                    href={route("invoices.show", inv.id)}
+                    className="btn btn-sm btn-primary"
+                  >
+                    Chi tiết
+                  </Link>
+
+                  {/* ✅ Nút sửa */}
+                  <Link
+                    href={route("invoices.edit", inv.id)}
+                    className="btn btn-sm btn-warning text-white"
+                  >
+                    Sửa
+                  </Link>
+
+                  <Link
+                    href={route("invoices.destroy", inv.id)}
+                    method="delete"
+                    as="button"
+                    className="btn btn-sm btn-danger"
+                    onClick={(e) => {
+                      if (!confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) e.preventDefault();
+                    }}
+                  >
+                    Xóa
+                  </Link>
+                </div>
               </td>
             </tr>
           ))}

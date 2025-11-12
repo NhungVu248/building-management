@@ -21,7 +21,6 @@ export default function DebtTable({ data, onSelect }) {
         return <Badge bg="light" text="dark">{status}</Badge>;
     }
   };
-
   return (
     <Table hover responsive className="align-middle">
       <thead>

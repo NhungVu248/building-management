@@ -9,7 +9,6 @@ import {
   Card,
   Badge,
 } from 'react-bootstrap';
-
 export default function Index({ contracts }) {
   const handleDelete = (id) => {
     if (confirm('Xóa hợp đồng này?')) {

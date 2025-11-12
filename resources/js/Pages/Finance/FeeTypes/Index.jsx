@@ -80,8 +80,6 @@ export default function Index({ feeTypes }) {
                     ))}
                   </tbody>
                 </Table>
-
-
               </Card.Body>
             </Card>
           </Col>

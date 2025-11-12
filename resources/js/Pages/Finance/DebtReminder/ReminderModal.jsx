@@ -15,7 +15,6 @@ export default function ReminderModal({ invoice, onClose, onSend, loading }) {
       <Modal.Header closeButton>
         <Modal.Title>🔔 Gửi nhắc nợ</Modal.Title>
       </Modal.Header>
-
       <Modal.Body>
         <p>Bạn sắp gửi nhắc nợ cho hóa đơn với thông tin:</p>
 

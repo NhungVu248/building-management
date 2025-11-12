@@ -26,7 +26,7 @@ export default function EditPayment({ payment, invoices }) {
     e.preventDefault();
     put(route("payments.update", payment.id));
   };
-
+  
   return (
     <Container fluid className="bg-light min-vh-100 py-5">
       <Container>

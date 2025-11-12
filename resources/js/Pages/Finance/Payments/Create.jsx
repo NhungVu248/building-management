@@ -19,7 +19,7 @@ export default function CreatePayment({ invoices }) {
     payment_date: new Date().toISOString().slice(0, 10), 
     note: "",
   });
-
+  
   const submit = (e) => {
     e.preventDefault();
     post(route("payments.store"));

@@ -130,7 +130,6 @@ export default function CreateInvoice({ apartments, feeTypes }) {
                   >
                     + Thêm dòng
                   </Button>
-
                   <div className="d-grid mt-5">
                     <Button
                       variant="primary"

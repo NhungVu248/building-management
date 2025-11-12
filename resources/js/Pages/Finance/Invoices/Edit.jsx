@@ -71,7 +71,6 @@ export default function EditInvoice({ invoice, feeTypes, apartments }) {
                     </Link>
                   </Col>
                 </Row>
-
                 <Form onSubmit={handleSubmit}>
                   <Row className="mb-3">
                     <Col md={4}>

@@ -16,6 +16,6 @@ class Apartment extends Model
     }
     public function resident()
     {
-        return $this->belongsTo(Resident::class, 'resident_id');
+        return $this->belongsTo(Resident::class,'resident_id');
     }
 }

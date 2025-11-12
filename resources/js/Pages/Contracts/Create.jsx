@@ -19,7 +19,7 @@ export default function Create({ apartments }) {
               <Card.Body className="p-4 p-md-5">
                 <h2 
                   className="text-center fw-bold mb-4" 
-                  style={{ color: '#2c3e50' /* Một màu xám sẫm */ }}
+                  style={{ color: '#2c3e50' }}
                 >
                   ➕ Tạo Hợp đồng mới
                 </h2>

@@ -41,9 +41,8 @@ export default function Index({ data }) {
 
                 <DebtTable
                   data={data.data}
-                  onSelect={(inv) => setSelectedInvoice(inv)} // Logic giữ nguyên
+                  onSelect={(inv) => setSelectedInvoice(inv)} 
                 />
-
               </Card.Body>
             </Card>
           </Col>

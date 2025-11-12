@@ -13,7 +13,6 @@ export default function Create() {
     e.preventDefault();
     post(route('fee-types.store'));
   };
-
   return (
     <Container fluid className="bg-light min-vh-100 py-5">
       <Container>

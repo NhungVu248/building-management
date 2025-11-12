@@ -5,7 +5,7 @@ export default function ItemForm({ index, item, feeTypes, onChange, onRemove }) 
   const handle = (field, val) => onChange(index, { ...item, [field]: val });
   const lineTotal =
     parseFloat(item.qty || 0) * parseFloat(item.unit_price || 0);
-
+     
   return (
     <tr>
       <td>

@@ -81,8 +81,6 @@ export default function Edit({ feeType }) {
                       )}
                     </Button>
                   </div>
-                  
-
                   <div className="text-center mt-3">
                     <Link href={route('fee-types.index')} className="text-secondary">
                       Hủy

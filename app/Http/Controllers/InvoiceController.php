@@ -124,7 +124,7 @@ class InvoiceController extends Controller
  
             $itemData = [
                 'fee_type_id' => $item['fee_type_id'],
-                'description' => $item['description'] ?? '', // Thêm ?? '' để tránh lỗi NOT NULL
+                'description' => $item['description'] ?? '', 
                 'qty' => $qty,
                 'unit_price' => $unit,
                 'amount' => $amount, // <-- Thêm trường amount đã tính

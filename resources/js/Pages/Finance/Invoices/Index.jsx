@@ -179,8 +179,7 @@ export default function InvoiceIndex({ data }) {
                       ))}
                     </Pagination>
                   </div>
-                )}
-                
+                )}                
               </Card.Body>
             </Card>
           </Col>

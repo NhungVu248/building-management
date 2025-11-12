@@ -19,8 +19,7 @@ export default function Edit({ contract, apartments }) {
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
             <Card className="shadow-sm border-0" style={{ borderRadius: '15px' }}>
-              <Card.Body className="p-4 p-md-5">
-                
+              <Card.Body className="p-4 p-md-5">               
                 <h2 
                   className="text-center fw-bold mb-4" 
                   style={{ color: '#2c3e50' }}

@@ -36,7 +36,6 @@ const formatMethod = (method) => {
   return map[method] || <Badge bg="secondary">{method}</Badge>;
 };
 
-
 export default function PaymentsIndex({ payments }) {
   const { delete: destroy } = useForm();
   const handleDelete = (payment) => {

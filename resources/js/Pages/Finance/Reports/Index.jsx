@@ -121,7 +121,6 @@ export default function FinanceReports({
               </Card.Body>
             </Card>
           </Col>
-
           <Col lg={8}>
             <Card
               className="shadow-sm border-0"

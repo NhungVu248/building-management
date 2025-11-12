@@ -13,7 +13,7 @@ class FinanceReportController extends Controller
     {
         /**
          * ⚙️ 1. Tổng thu (Payments)
-         * Bảng payments có cột: amount, paid_at
+         * Bảng payments có cột:amount, paid_at
          */
         $totalIncome = Payment::sum('amount');
 

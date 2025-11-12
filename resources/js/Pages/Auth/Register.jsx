@@ -1,4 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import bg from '@/assets/images/toanha.jpg'; // ✅ import ảnh đúng chuẩn Vite
 
 export default function Register() {
   const { data, setData, post, processing, errors, reset } = useForm({
@@ -20,10 +21,10 @@ export default function Register() {
       <Head title="Register" />
 
       <div className="min-h-screen relative">
-        {/* Background */}
+        {/* ✅ Background import qua Vite */}
         <img
-          src="https://images.unsplash.com/photo-1465804575741-338df8554e0b?q=80&w=2400&auto=format&fit=crop"
-          alt=""
+          src={bg}
+          alt="Building background"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />

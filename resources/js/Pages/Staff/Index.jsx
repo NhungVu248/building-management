@@ -1,27 +1,33 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function Index({ staff, filters, positions }) {
+export default function Index({ staff, filters = {}, positions = [] }) {
   const [q, setQ] = useState(filters?.q ?? '');
   const [status, setStatus] = useState(filters?.status ?? '');
   const [position, setPosition] = useState(filters?.position ?? '');
 
-  // debounce tìm kiếm
+  // Debounce cho tìm kiếm theo q
   useEffect(() => {
     const t = setTimeout(() => {
-      router.get(route('staff.index'), { q, status, position }, { preserveState: true, replace: true });
+      router.get(
+        route('staff.index'),
+        { q, status, position },
+        { preserveState: true, replace: true }
+      );
     }, 400);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
 
-  // thay filter select gọi ngay
   const applyFilter = (next) => {
     router.get(route('staff.index'), next, { preserveState: true, replace: true });
   };
 
-  const badge = (s) => (
-    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-      ${s === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-700'}`}>
+  const Badge = ({ s }) => (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
+      ${s === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-700'}`}
+    >
       {s === 'active' ? 'Đang làm' : 'Nghỉ'}
     </span>
   );
@@ -29,24 +35,32 @@ export default function Index({ staff, filters, positions }) {
   return (
     <>
       <Head title="Nhân viên" />
-      <div className="min-h-screen bg-slate-50 p-6">
-        <div className="mx-auto max-w-6xl space-y-4">
 
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-slate-800">Nhân viên</h1>
-            <Link
-              href={route('staff.create')}
-              className="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700"
-            >
-              + Thêm nhân viên
-            </Link>
+      {/* HERO */}
+      <section className="relative">
+        <img
+          src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=2400&auto=format&fit=crop"
+          alt=""
+          className="h-48 w-full object-cover md:h-60"
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-0 flex items-center">
+          <div className="mx-auto max-w-6xl px-4">
+            <h1 className="text-2xl md:text-3xl font-semibold text-white">Operations Team</h1>
+            <p className="mt-1 text-white/80 max-w-xl text-sm">
+              Quản lý nhân sự vận hành tòa nhà: trạng thái làm việc, chức vụ, liên hệ.
+            </p>
           </div>
+        </div>
+      </section>
 
-          {/* Filters */}
+      {/* CONTENT */}
+      <div className="min-h-[calc(100vh-12rem)] bg-slate-50 p-6">
+        <div className="mx-auto max-w-6xl space-y-4">
+          {/* Action bar + Filters */}
           <div className="rounded-2xl border bg-white p-4">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="sm:col-span-1">
+            <div className="grid gap-3 sm:grid-cols-5">
+              <div className="sm:col-span-2">
                 <label className="block text-sm text-slate-600">Tìm kiếm</label>
                 <input
                   value={q}
@@ -56,13 +70,14 @@ export default function Index({ staff, filters, positions }) {
                 />
               </div>
 
-              <div>
+              <div className="sm:col-span-1">
                 <label className="block text-sm text-slate-600">Trạng thái</label>
                 <select
                   value={status}
                   onChange={(e) => {
-                    setStatus(e.target.value);
-                    applyFilter({ q, status: e.target.value, position });
+                    const v = e.target.value;
+                    setStatus(v);
+                    applyFilter({ q, status: v, position });
                   }}
                   className="mt-1 w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500"
                 >
@@ -72,27 +87,39 @@ export default function Index({ staff, filters, positions }) {
                 </select>
               </div>
 
-              <div>
+              <div className="sm:col-span-1">
                 <label className="block text-sm text-slate-600">Chức vụ</label>
                 <select
                   value={position}
                   onChange={(e) => {
-                    setPosition(e.target.value);
-                    applyFilter({ q, status, position: e.target.value });
+                    const v = e.target.value;
+                    setPosition(v);
+                    applyFilter({ q, status, position: v });
                   }}
                   className="mt-1 w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="">Tất cả</option>
-                  {positions?.map((p) => (
-                    <option key={p} value={p}>{p}</option>
+                  {positions.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="sm:col-span-1 flex items-end justify-end">
+                <Link
+                  href={route('staff.create')}
+                  className="inline-flex items-center justify-center w-full sm:w-auto rounded-xl bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+                >
+                  + Thêm nhân viên
+                </Link>
               </div>
             </div>
           </div>
 
           {/* Table */}
-          <div className="rounded-2xl bg-white shadow p-0 overflow-hidden">
+          <div className="rounded-2xl bg-white shadow overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50">
@@ -120,9 +147,14 @@ export default function Index({ staff, filters, positions }) {
                       <td className="px-4 py-3">{s.position ?? '-'}</td>
                       <td className="px-4 py-3">{s.email ?? '-'}</td>
                       <td className="px-4 py-3">{s.phone ?? '-'}</td>
-                      <td className="px-4 py-3">{badge(s.status)}</td>
+                      <td className="px-4 py-3">
+                        <Badge s={s.status} />
+                      </td>
                       <td className="px-4 py-3 text-right space-x-3">
-                        <Link href={route('staff.edit', s.id)} className="text-indigo-600 hover:underline">
+                        <Link
+                          href={route('staff.edit', s.id)}
+                          className="text-indigo-600 hover:underline"
+                        >
                           Sửa
                         </Link>
                         <Link
@@ -141,7 +173,6 @@ export default function Index({ staff, filters, positions }) {
               </table>
             </div>
 
-            {/* Pagination */}
             <Pagination meta={staff} />
           </div>
         </div>

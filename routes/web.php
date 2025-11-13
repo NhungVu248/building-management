@@ -11,6 +11,7 @@ use App\Http\Controllers\SecurityIncidentController;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MaintenanceScheduleController;
 /*
 |--------------------------------------------------------------------------
 | Hệ thống route chính cho ứng dụng Quản lý Tòa Nhà

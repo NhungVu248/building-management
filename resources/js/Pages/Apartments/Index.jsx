@@ -193,6 +193,7 @@ export default function Index({ apartments }) {
                   }}
                 >
                   <tr>
+                    <th style={{ padding: '14px' }}>#</th>
                     <th style={{ padding: '14px' }}>Mã</th>
                     <th>Chủ hộ</th>
                     <th>Tầng</th>
@@ -220,6 +221,7 @@ export default function Index({ apartments }) {
                             index % 2 === 0 ? '#fdfdff' : '#f4f7ff')
                         }
                       >
+                        <td className="fw-semibold">{a.id}</td>
                         <td className="fw-semibold text-primary">{a.code}</td>
                         <td>{a.owner_name || '—'}</td>
                         <td>{a.floor}</td>

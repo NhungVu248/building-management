@@ -1,3 +1,4 @@
+/** Dashboard.jsx – UI mới, giữ nguyên NAVBAR CONTENT */
 import React from "react";
 import { Link, usePage } from "@inertiajs/react";
 import {
@@ -29,56 +30,60 @@ export default function Dashboard() {
             label: "👥 Nhân sự",
             value: summary.staff ?? 0,
             route: "/staff",
-            color: "from-blue-500 to-blue-700",
         },
         {
             id: 2,
             label: "🏘️ Căn hộ",
             value: summary.apartments ?? 0,
             route: "/apartments",
-            color: "from-cyan-500 to-cyan-700",
         },
         {
             id: 3,
             label: "👪 Cư dân",
             value: summary.residents ?? 0,
             route: "/residents",
-            color: "from-emerald-500 to-emerald-700",
         },
         {
             id: 4,
             label: "🛠️ Bảo trì",
             value: summary.maintenance ?? 0,
             route: "/maintenance",
-            color: "from-orange-500 to-orange-700",
         },
         {
             id: 5,
             label: "💰 Hóa đơn chưa thanh toán",
             value: summary.unpaidInvoices ?? 0,
             route: "/invoices",
-            color: "from-pink-500 to-pink-700",
         },
         {
             id: 6,
             label: "🎫 Thẻ ra/vào",
             value: summary.accessCards ?? 0,
             route: "/access-cards",
-            color: "from-purple-500 to-purple-700",
         },
         {
             id: 7,
             label: "🚗 Phương tiện",
             value: summary.vehicles ?? 0,
             route: "/vehicles",
-            color: "from-indigo-500 to-indigo-700",
         },
         {
             id: 8,
             label: "🚪 Lượt ra/vào",
             value: summary.accessLogs ?? 0,
             route: "/access-logs",
-            color: "from-sky-500 to-sky-700",
+        },
+        {
+            id: 9,
+            label: "🧾 Work Orders",
+            value: summary.workOrders ?? 0,
+            route: "/work-orders",
+        },
+        {
+            id: 10,
+            label: "🗓️ Lịch bảo dưỡng",
+            value: summary.maintenanceSchedules ?? 0,
+            route: "/maintenance-schedules",
         },
     ];
 
@@ -90,31 +95,31 @@ export default function Dashboard() {
 
     return (
         <>
-            {/* NAVBAR */}
+            {/* ================= NAVBAR (giữ đúng nội dung) ================= */}
             <Navbar
+                bg="white"
                 expand="lg"
                 sticky="top"
-                className="shadow-md bg-white/90 backdrop-blur-md border-b border-gray-200 py-3"
+                className="shadow-sm border-bottom py-3"
+                style={{ fontSize: "15px" }}
             >
                 <Container>
                     <Navbar.Brand
                         href="/dashboard"
-                        className="fw-bold text-blue-700 fs-5 d-flex align-items-center gap-2"
+                        className="fw-bold text-primary fs-4"
                     >
-                        🏢 <span>SmartBuilding</span>
+                        🏢 Quản lý Tòa nhà
                     </Navbar.Brand>
 
                     <Navbar.Toggle />
                     <Navbar.Collapse>
-                        <Nav className="me-auto fw-semibold">
-                            <Nav.Link
-                                as={Link}
-                                href="/staff"
-                                className="text-gray-700 hover:text-blue-600"
-                            >
-                                👥 Nhân sự
+                        {/* ===== Giữ nguyên menu ===== */}
+                        <Nav className="me-auto">
+                            <Nav.Link as={Link} href="/staff">
+                                👥 Hệ thống & Nhân sự
                             </Nav.Link>
-                            <NavDropdown title="🏘️ Căn hộ" id="nav-apartment">
+
+                            <NavDropdown title="🏘️ Căn hộ & Pháp lý">
                                 <NavDropdown.Item as={Link} href="/apartments">
                                     Danh sách Căn hộ
                                 </NavDropdown.Item>
@@ -123,7 +128,19 @@ export default function Dashboard() {
                                 </NavDropdown.Item>
                             </NavDropdown>
 
-                            <NavDropdown title="🛠️ Vận hành" id="nav-ops">
+                            <NavDropdown title="👪 Cư dân & Tiện ích">
+                                <NavDropdown.Item as={Link} href="/residents">
+                                    Cư dân
+                                </NavDropdown.Item>
+                                <NavDropdown.Item as={Link} href="/amenities">
+                                    Tiện ích cộng đồng
+                                </NavDropdown.Item>
+                                <NavDropdown.Item as={Link} href="/bookings">
+                                    Đặt lịch tiện ích
+                                </NavDropdown.Item>
+                            </NavDropdown>
+
+                            <NavDropdown title="🛠️ Vận hành">
                                 <NavDropdown.Item
                                     as={Link}
                                     href="/access-cards"
@@ -137,53 +154,65 @@ export default function Dashboard() {
                                     Lượt ra/vào
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
+                                <NavDropdown.Item as={Link} href="/work-orders">
+                                    Work Orders
+                                </NavDropdown.Item>
+                                <NavDropdown.Item
+                                    as={Link}
+                                    href="/maintenance-schedules"
+                                >
+                                    Lịch bảo dưỡng
+                                </NavDropdown.Item>
+                                <NavDropdown.Divider />
                                 <NavDropdown.Item as={Link} href="/maintenance">
                                     Bảo trì
                                 </NavDropdown.Item>
+                                <NavDropdown.Item as={Link} href="/security">
+                                    An ninh
+                                </NavDropdown.Item>
                             </NavDropdown>
 
-                            <NavDropdown title="💰 Tài chính" id="nav-finance">
+                            <NavDropdown title="💰 Tài chính & Nghiệp vụ">
+                                <NavDropdown.Item as={Link} href="/fee-types">
+                                    Loại phí
+                                </NavDropdown.Item>
                                 <NavDropdown.Item as={Link} href="/invoices">
                                     Hóa đơn
                                 </NavDropdown.Item>
                                 <NavDropdown.Item as={Link} href="/payments">
                                     Thanh toán
                                 </NavDropdown.Item>
+                                <NavDropdown.Item as={Link} href="/debts">
+                                    Nhắc nợ
+                                </NavDropdown.Item>
                                 <NavDropdown.Item as={Link} href="/reports">
-                                    Báo cáo
+                                    Báo cáo thu chi
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
 
-                        <Nav className="ms-auto align-items-center">
-                            <span className="me-3 text-sm text-gray-600">
-                                Xin chào,{" "}
-                                <strong className="text-blue-700">
-                                    {auth?.user?.name || "Admin"}
-                                </strong>
-                            </span>
-
+                        {/* ========== User Avatar ========== */}
+                        <Nav>
                             <Dropdown align="end">
                                 <Dropdown.Toggle
                                     as="div"
-                                    className="cursor-pointer"
+                                    className="p-0"
+                                    style={{ cursor: "pointer" }}
                                 >
                                     <Image
                                         src={avatarUrl}
-                                        alt="avatar"
                                         roundedCircle
                                         style={{
-                                            width: "42px",
-                                            height: "42px",
+                                            width: 42,
+                                            height: 42,
                                             objectFit: "cover",
-                                            border: "2px solid #2563eb",
+                                            border: "2px solid #1E40AF",
+                                            cursor: "pointer",
                                         }}
                                     />
                                 </Dropdown.Toggle>
-                                <Dropdown.Menu
-                                    align="end"
-                                    className="shadow-lg"
-                                >
+
+                                <Dropdown.Menu align="end">
                                     <Dropdown.Header className="text-center">
                                         <strong>{auth?.user?.name}</strong>
                                         <div className="small text-muted">
@@ -212,178 +241,189 @@ export default function Dashboard() {
                 </Container>
             </Navbar>
 
-            {/* CONTENT */}
-            <div className="bg-gray-50 min-vh-100 py-5">
-                <Container>
-                    <div className="text-center mb-5">
-                        <h2 className="fw-bold text-blue-700 mb-2">
-                            Bảng điều khiển quản lý tòa nhà
-                        </h2>
-                        <p className="text-gray-500">
-                            Theo dõi tình hình vận hành, cư dân, tài chính và
-                            bảo trì của hệ thống.
-                        </p>
-                    </div>
-
-                    {/* STAT CARDS */}
-                    <Row className="g-4 mb-5">
-                        {cards.map((item) => (
-                            <Col key={item.id} xs={12} sm={6} md={4} lg={3}>
-                                <Card
-                                    className={`h-100 text-white border-0 shadow-lg rounded-3 bg-gradient-to-br ${item.color} hover:scale-[1.02] transition-transform duration-300`}
-                                >
-                                    <Card.Body className="text-center py-4">
-                                        <div className="text-4xl mb-2">
-                                            {item.label.split(" ")[0]}
-                                        </div>
-                                        <Card.Title className="fw-bold fs-6 mb-2">
-                                            {item.label.replace(/^[^ ]+ /, "")}
-                                        </Card.Title>
-                                        <Card.Text className="display-6 fw-bold mb-3">
-                                            {item.value}
-                                        </Card.Text>
-                                        <Button
-                                            as={Link}
-                                            href={item.route}
-                                            size="sm"
-                                            variant="light"
-                                            className="fw-semibold text-blue-700 rounded-pill px-3"
-                                        >
-                                            Xem chi tiết
-                                        </Button>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
-
-                    {/* THÔNG BÁO & PHẢN ÁNH */}
-                    <Row className="g-4">
-                        {/* Thông báo */}
-                        <Col md={6}>
-                            <Card className="shadow-sm border-0 rounded-4 overflow-hidden">
-                                <Card.Header className="bg-blue-700 text-white fw-semibold d-flex justify-content-between align-items-center py-3">
-                                    🔔 Thông báo gần đây
-                                    <Button
-                                        as={Link}
-                                        href="/announcements"
-                                        size="sm"
-                                        variant="light"
-                                        className="text-blue-700"
-                                    >
-                                        Xem tất cả
-                                    </Button>
-                                </Card.Header>
-                                <Card.Body className="p-0">
-                                    {announcements.length === 0 ? (
-                                        <p className="p-3 text-muted text-center mb-0">
-                                            Không có thông báo nào.
-                                        </p>
-                                    ) : (
-                                        <Table
-                                            hover
-                                            responsive
-                                            className="mb-0"
-                                        >
-                                            <tbody>
-                                                {announcements
-                                                    .slice(0, 5)
-                                                    .map((a) => (
-                                                        <tr key={a.id}>
-                                                            <td className="fw-semibold text-gray-800">
-                                                                {a.title}
-                                                            </td>
-                                                            <td className="text-end text-muted small">
-                                                                {new Date(
-                                                                    a.created_at
-                                                                ).toLocaleDateString(
-                                                                    "vi-VN"
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                            </tbody>
-                                        </Table>
-                                    )}
-                                </Card.Body>
-                            </Card>
-                        </Col>
-
-                        {/* Ticket */}
-                        <Col md={6}>
-                            <Card className="shadow-sm border-0 rounded-4 overflow-hidden">
-                                <Card.Header className="bg-amber-500 text-white fw-semibold d-flex justify-content-between align-items-center py-3">
-                                    🧾 Phản ánh mới
-                                    <Button
-                                        as={Link}
-                                        href="/tickets"
-                                        size="sm"
-                                        variant="light"
-                                        className="text-amber-700"
-                                    >
-                                        Quản lý
-                                    </Button>
-                                </Card.Header>
-                                <Card.Body className="p-0">
-                                    {tickets.length === 0 ? (
-                                        <p className="p-3 text-muted text-center mb-0">
-                                            Chưa có phản ánh nào.
-                                        </p>
-                                    ) : (
-                                        <Table
-                                            hover
-                                            responsive
-                                            className="mb-0"
-                                        >
-                                            <tbody>
-                                                {tickets
-                                                    .slice(0, 5)
-                                                    .map((t) => (
-                                                        <tr key={t.id}>
-                                                            <td>
-                                                                <div className="fw-semibold text-gray-800">
-                                                                    {t.subject}
-                                                                </div>
-                                                                <small className="text-muted">
-                                                                    {t.resident
-                                                                        ?.name ||
-                                                                        "Ẩn danh"}
-                                                                </small>
-                                                            </td>
-                                                            <td className="text-end">
-                                                                <Badge
-                                                                    bg={
-                                                                        t.status ===
-                                                                        "resolved"
-                                                                            ? "success"
-                                                                            : t.status ===
-                                                                              "in_progress"
-                                                                            ? "info"
-                                                                            : t.status ===
-                                                                              "closed"
-                                                                            ? "secondary"
-                                                                            : "warning"
-                                                                    }
-                                                                >
-                                                                    {t.status}
-                                                                </Badge>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                            </tbody>
-                                        </Table>
-                                    )}
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    </Row>
+            {/* ================= HERO (theo mẫu ảnh) ================= */}
+            <div
+                className="w-100 text-white d-flex align-items-center"
+                style={{
+                    height: 180,
+                    backgroundImage:
+                        "url('https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    position: "relative",
+                }}
+            >
+                <div
+                    className="position-absolute w-100 h-100"
+                    style={{ background: "rgba(0,0,0,0.45)" }}
+                ></div>
+                <Container className="position-relative">
+                    <h2 className="fw-bold mb-1">Bảng điều khiển hệ thống</h2>
+                    <p className="mb-0 text-light">
+                        Tổng quan các hoạt động quản lý tòa nhà
+                    </p>
                 </Container>
             </div>
 
-            {/* FOOTER */}
-            <footer className="bg-white border-t text-center py-3 text-gray-500 text-sm shadow-inner">
-                © {new Date().getFullYear()} SmartBuilding • Hệ thống Quản lý
-                Tòa Nhà Thông Minh
+            {/* ================= MAIN CONTENT ================= */}
+            <Container className="mt-5">
+                {/* CARDS */}
+                <Row className="g-4 mb-5">
+                    {cards.map((c) => (
+                        <Col key={c.id} xs={12} sm={6} md={4} lg={3}>
+                            <Card
+                                className="shadow-sm border-0 h-100"
+                                style={{ borderRadius: "18px" }}
+                            >
+                                <Card.Body className="text-center py-4">
+                                    <div className="fs-1">
+                                        {c.label.split(" ")[0]}
+                                    </div>
+                                    <h5 className="fw-bold mt-2">{c.label}</h5>
+                                    <div className="display-6 fw-bold text-primary">
+                                        {c.value}
+                                    </div>
+                                    <Button
+                                        as={Link}
+                                        href={c.route}
+                                        variant="outline-primary"
+                                        size="sm"
+                                        className="mt-3 px-4"
+                                        style={{ borderRadius: "50px" }}
+                                    >
+                                        Chi tiết
+                                    </Button>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+
+                <Row className="g-4">
+                    {/* THÔNG BÁO */}
+                    <Col md={6}>
+                        <Card
+                            className="shadow-sm border-0 h-100"
+                            style={{ borderRadius: 18 }}
+                        >
+                            <Card.Header className="fw-bold bg-white text-primary border-bottom">
+                                🔔 Thông báo gần đây
+                            </Card.Header>
+
+                            <Card.Body className="p-0 bg-light">
+                                {announcements.length === 0 ? (
+                                    <p className="p-3 text-center text-muted">
+                                        Không có thông báo.
+                                    </p>
+                                ) : (
+                                    <Table hover className="mb-0">
+                                        <tbody>
+                                            {announcements
+                                                .slice(0, 5)
+                                                .map((a) => (
+                                                    <tr key={a.id}>
+                                                        <td className="fw-semibold">
+                                                            {a.title}
+                                                        </td>
+                                                        <td className="text-end text-muted small">
+                                                            {new Date(
+                                                                a.created_at
+                                                            ).toLocaleDateString(
+                                                                "vi-VN"
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                        </tbody>
+                                    </Table>
+                                )}
+                            </Card.Body>
+
+                            <div className="text-end p-3">
+                                <Button
+                                    as={Link}
+                                    href="/announcements"
+                                    size="sm"
+                                    variant="primary"
+                                >
+                                    Xem tất cả
+                                </Button>
+                            </div>
+                        </Card>
+                    </Col>
+
+                    {/* TICKETS */}
+                    <Col md={6}>
+                        <Card
+                            className="shadow-sm border-0 h-100"
+                            style={{ borderRadius: 18 }}
+                        >
+                            <Card.Header className="fw-bold bg-white text-warning border-bottom">
+                                🧾 Ticket phản ánh mới
+                            </Card.Header>
+
+                            <Card.Body className="p-0 bg-light">
+                                {tickets.length === 0 ? (
+                                    <p className="p-3 text-center text-muted">
+                                        Chưa có phản ánh nào.
+                                    </p>
+                                ) : (
+                                    <Table hover className="mb-0">
+                                        <tbody>
+                                            {tickets.slice(0, 5).map((t) => (
+                                                <tr key={t.id}>
+                                                    <td>
+                                                        <div className="fw-semibold">
+                                                            {t.subject}
+                                                        </div>
+                                                        <small className="text-muted">
+                                                            {t.resident?.name ||
+                                                                "Ẩn danh"}
+                                                        </small>
+                                                    </td>
+                                                    <td className="text-end">
+                                                        <Badge
+                                                            bg={
+                                                                t.status ===
+                                                                "resolved"
+                                                                    ? "success"
+                                                                    : t.status ===
+                                                                      "in_progress"
+                                                                    ? "info"
+                                                                    : t.status ===
+                                                                      "closed"
+                                                                    ? "secondary"
+                                                                    : "warning"
+                                                            }
+                                                        >
+                                                            {t.status}
+                                                        </Badge>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </Table>
+                                )}
+                            </Card.Body>
+
+                            <div className="text-end p-3">
+                                <Button
+                                    as={Link}
+                                    href="/tickets"
+                                    size="sm"
+                                    variant="warning"
+                                >
+                                    Quản lý Ticket
+                                </Button>
+                            </div>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+
+            <footer className="text-center text-muted py-4 mt-5 bg-white border-top">
+                © {new Date().getFullYear()} Hệ thống Quản lý Tòa nhà • Laravel
+                + React
             </footer>
         </>
     );

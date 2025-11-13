@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 
 export default function Index({ staff, filters = {}, positions = [] }) {
   const [q, setQ] = useState(filters?.q ?? '');
-  const [status, setStatus] = useState(filters?.status ?? '');
   const [position, setPosition] = useState(filters?.position ?? '');
 
   // Debounce cho tìm kiếm theo q
@@ -11,7 +10,7 @@ export default function Index({ staff, filters = {}, positions = [] }) {
     const t = setTimeout(() => {
       router.get(
         route('staff.index'),
-        { q, status, position },
+        { q, position },
         { preserveState: true, replace: true }
       );
     }, 400);
@@ -22,15 +21,6 @@ export default function Index({ staff, filters = {}, positions = [] }) {
   const applyFilter = (next) => {
     router.get(route('staff.index'), next, { preserveState: true, replace: true });
   };
-
-  const Badge = ({ s }) => (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-      ${s === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-700'}`}
-    >
-      {s === 'active' ? 'Đang làm' : 'Nghỉ'}
-    </span>
-  );
 
   return (
     <>
@@ -48,7 +38,7 @@ export default function Index({ staff, filters = {}, positions = [] }) {
           <div className="mx-auto max-w-6xl px-4">
             <h1 className="text-2xl md:text-3xl font-semibold text-white">Operations Team</h1>
             <p className="mt-1 text-white/80 max-w-xl text-sm">
-              Quản lý nhân sự vận hành tòa nhà: trạng thái làm việc, chức vụ, liên hệ.
+              Quản lý nhân sự vận hành tòa nhà: chức vụ, thông tin liên hệ.
             </p>
           </div>
         </div>
@@ -70,31 +60,14 @@ export default function Index({ staff, filters = {}, positions = [] }) {
                 />
               </div>
 
-              <div className="sm:col-span-1">
-                <label className="block text-sm text-slate-600">Trạng thái</label>
-                <select
-                  value={status}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setStatus(v);
-                    applyFilter({ q, status: v, position });
-                  }}
-                  className="mt-1 w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  <option value="">Tất cả</option>
-                  <option value="active">Đang làm</option>
-                  <option value="inactive">Nghỉ</option>
-                </select>
-              </div>
-
-              <div className="sm:col-span-1">
+              <div className="sm:col-span-2">
                 <label className="block text-sm text-slate-600">Chức vụ</label>
                 <select
                   value={position}
                   onChange={(e) => {
                     const v = e.target.value;
                     setPosition(v);
-                    applyFilter({ q, status, position: v });
+                    applyFilter({ q, position: v });
                   }}
                   className="mt-1 w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500"
                 >
@@ -128,14 +101,13 @@ export default function Index({ staff, filters = {}, positions = [] }) {
                     <th className="px-4 py-3">Chức vụ</th>
                     <th className="px-4 py-3">Email</th>
                     <th className="px-4 py-3">Điện thoại</th>
-                    <th className="px-4 py-3">Trạng thái</th>
                     <th className="px-4 py-3 text-right">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
                   {staff.data.length === 0 && (
                     <tr>
-                      <td colSpan="6" className="px-4 py-6 text-center text-slate-500">
+                      <td colSpan="5" className="px-4 py-6 text-center text-slate-500">
                         Không có dữ liệu.
                       </td>
                     </tr>
@@ -147,9 +119,6 @@ export default function Index({ staff, filters = {}, positions = [] }) {
                       <td className="px-4 py-3">{s.position ?? '-'}</td>
                       <td className="px-4 py-3">{s.email ?? '-'}</td>
                       <td className="px-4 py-3">{s.phone ?? '-'}</td>
-                      <td className="px-4 py-3">
-                        <Badge s={s.status} />
-                      </td>
                       <td className="px-4 py-3 text-right space-x-3">
                         <Link
                           href={route('staff.edit', s.id)}

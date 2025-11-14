@@ -33,8 +33,17 @@ export default function SecurityIndex() {
         router.visit(url, { preserveState: true, replace: true });
     };
 
+    // FIX HTML label Pagination
+    const decodeHtml = (str) =>
+        str
+            .replace(/&laquo;/g, "«")
+            .replace(/&raquo;/g, "»")
+            .replace(/&nbsp;/g, " ");
+
+    // FIX Pagination full
     const renderPagination = () => {
         const { links } = incidents;
+
         return (
             <Pagination className="justify-content-center mt-4">
                 {links.map((link, idx) => {
@@ -60,10 +69,11 @@ export default function SecurityIndex() {
                         <Pagination.Item
                             key={idx}
                             active={link.active}
-                            onClick={() => pageChange(link.url)}
                             disabled={!link.url}
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                        />
+                            onClick={() => pageChange(link.url)}
+                        >
+                            {decodeHtml(link.label)}
+                        </Pagination.Item>
                     );
                 })}
             </Pagination>
@@ -213,8 +223,7 @@ export default function SecurityIndex() {
                                                 colSpan="8"
                                                 className="text-center py-4 text-muted"
                                             >
-                                                Không có sự cố nào được ghi
-                                                nhận.
+                                                Không có sự cố nào được ghi nhận.
                                             </td>
                                         </tr>
                                     )}
